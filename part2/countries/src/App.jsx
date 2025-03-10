@@ -10,7 +10,6 @@ function App() {
 
 
   useEffect(() => {
-    console.log("get countries")
     axios.get("https://studies.cs.helsinki.fi/restcountries/api/all")
     .then(response => setCountries(response.data))
   }, [])
@@ -24,7 +23,6 @@ function App() {
 
   return (
     <>
-    {console.log("render")}
       <Input label="Search countries" value={searchValue} onChange={(e) => handleInput(e.target.value)} />
       <List results={displayedCountries} onClick={handleInput}/>
     </>
