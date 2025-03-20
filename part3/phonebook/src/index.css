@@ -1,0 +1,11 @@
+.message {
+    padding: 1%;
+    width: 50%;
+    color: white;
+}
+.info {
+    background-color: cornflowerblue;
+}
+.error {
+    background-color: red;
+}
