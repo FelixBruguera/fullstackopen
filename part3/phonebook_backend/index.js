@@ -7,7 +7,7 @@ morgan.token("body", (req) => JSON.stringify(req.body))
 app.use(morgan("tiny"))
 app.use(morgan(':body'))
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT)
 
 
