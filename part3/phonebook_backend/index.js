@@ -1,4 +1,6 @@
+require('dotenv').config()
 const express = require("express")
+const Person = require("./models/person")
 const app = express()
 var morgan = require('morgan')
 app.use(express.json())
@@ -8,7 +10,7 @@ morgan.token("body", (req) => JSON.stringify(req.body))
 app.use(morgan("tiny"))
 app.use(morgan(':body'))
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT)
 
 
@@ -36,18 +38,19 @@ let persons = [
 ]
 
 app.get("/api/persons", (request, response) => {
-    response.send(persons)
+    Person.find({}).then(data => response.send(data))
 })
 
 app.get("/info", (request, response) => {
-    const text = `Phonebook has info of ${persons.length} people`
-    response.send(text + "<br> <br>" + new Date())
+    Person.find({})
+    .then(data => response.send(`Phonebook has info of ${data.length} people` + "<br> <br>" + new Date()))
 })
 
 app.get("/api/persons/:id", (request, response) => {
     const id = request.params.id
-    const person = persons.find((per) => per.id === id)
-    person ? response.send(person) : response.status(404).end()
+    Person.findById(id)
+    .then(person => response.send(person))
+    .catch(person => response.status(404).end())
 })
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -56,17 +59,12 @@ app.delete("/api/persons/:id", (request, response) => {
     response.status(204).end()
 })
 
-const checkDuplicates = (name) => persons.find((per) => per.name === name)
+// const checkDuplicates = (name) => persons.find((per) => per.name === name)
 
 app.post("/api/persons", (request, response) => {
     if (request.body.name && request.body.number) {
-        if (checkDuplicates(request.body.name)) {
-            return response.status(400).json({error: "A person with that name already exists"}).end()
-        }
-        const id = Math.floor(Math.random() * 1000)
-        const newPerson = {"id": String(id), "name": request.body.name, "number": request.body.number}
-        persons = persons.concat(newPerson)
-        response.status(200).send(newPerson)
+        const newPerson = new Person({"name": request.body.name, "number": request.body.number})
+        newPerson.save().then(data => response.status(200).send(data))
     }
     else {
         response.status(400).json({error: "Your request must include a name and a number field"}).end()
