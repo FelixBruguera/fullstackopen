@@ -26,17 +26,21 @@ const App = () => {
     setTimeout(() => setMessage({message: '', type: ''}), 5000)
   }
 
+  const resetInputs = () => {
+    setNewName('')
+    setNewNumber('')
+  }
+
   const handleFormSubmit = (e) => {
     e.preventDefault()
     const check = checkName()
     if (check) { return updateNumber(check) }
     const newPerson = {name: newName, number: newNumber}
     PersonService.add(newPerson)
-    .then((response) => setPersons(persons.concat(response)))
-    .then(messageHandler({message: "Succesfully added", type: 'info'}))
-    .catch((error) => messageHandler({message: `Failed to add person: ${error.response.statusText}`, type: 'error'}))
-    setNewName('')
-    setNewNumber('')
+    .then(response => setPersons(persons.concat(response)))
+    .then(response => messageHandler({message: "Succesfully added", type: 'info'}))
+    .then(response => resetInputs())
+    .catch(error => messageHandler({message: error.response.data, type: 'error'}))
   }
 
   const updateNumber = (person) => {
@@ -44,11 +48,10 @@ const App = () => {
     if (confirmation) {
       const newPerson = {...person, number: newNumber}
       PersonService.update(person.id, newPerson)
-      .then(setPersons(persons.map((person) => person.id === newPerson.id ? newPerson : person)))
-      .then(messageHandler({message: "Succesfully updated", type: 'info'}))
-      .catch((error) => messageHandler({message: `Failed to update person: ${error.response.statusText}`, type: 'error'}))
-      setNewName('')
-      setNewNumber('')
+      .then(response => setPersons(persons.map((person) => person.id === newPerson.id ? newPerson : person)))
+      .then(response => messageHandler({message: "Succesfully updated", type: 'info'}))
+      .then(response => resetInputs())
+      .catch((error) => messageHandler({message: error.response.data, type: 'error'}))
     }
   }
 
@@ -56,9 +59,9 @@ const App = () => {
     let confirmation = window.confirm("Are you sure?")
     if (confirmation) {
       PersonService.deletePerson(id)
-      .then((response) => setPersons(persons.filter((person) => person.id != id)))
-      .then(messageHandler({message: "Succesfully deleted", type: 'info'}))
-      .catch((error) => messageHandler({message: `Failed to delete person: ${error.response.statusText}`, type: 'error'}))
+      .then(response => setPersons(persons.filter((person) => person.id != id)))
+      .then(response => messageHandler({message: "Succesfully deleted", type: 'info'}))
+      .catch(error => messageHandler({message: `Failed to delete person: ${error.response.statusText}`, type: 'error'}))
     }
   }
 

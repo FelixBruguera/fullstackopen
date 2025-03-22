@@ -4,8 +4,19 @@ mongoose.set('strictQuery',false)
 mongoose.connect(url)
 
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minLength: 3,
+    required: true
+  },
+  number: {
+    type: String,
+    minLength: 8,
+    validate: {
+      validator: number => number.match(/^\d{2,3}-\d+$/),
+      message: props => `${props.value} doesn't match the required format: 000-00000`
+    }
+  },
 })
 
 personSchema.set('toJSON', {
