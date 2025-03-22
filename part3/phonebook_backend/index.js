@@ -3,8 +3,8 @@ const express = require("express")
 const Person = require("./models/person")
 const app = express()
 var morgan = require('morgan')
-app.use(express.json())
 app.use(express.static('dist'))
+app.use(express.json())
 
 morgan.token("body", (req) => JSON.stringify(req.body))
 app.use(morgan("tiny"))
@@ -13,60 +13,65 @@ app.use(morgan(':body'))
 const PORT = process.env.PORT
 app.listen(PORT)
 
-
-let persons = [
-    { 
-      "id": "1",
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": "2",
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": "3",
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": "4",
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
-
 app.get("/api/persons", (request, response) => {
-    Person.find({}).then(data => response.send(data))
+    Person.find({})
+    .then(data => response.send(data))
+    .catch(error => next(error))
 })
 
 app.get("/info", (request, response) => {
     Person.find({})
     .then(data => response.send(`Phonebook has info of ${data.length} people` + "<br> <br>" + new Date()))
+    .catch(error => next(error))
 })
 
-app.get("/api/persons/:id", (request, response) => {
+app.get("/api/persons/:id", (request, response, next) => {
     const id = request.params.id
     Person.findById(id)
+    .then(person => person ? response.send(person) : response.status(404).end())
+    .catch(error => next(error))
+})
+
+app.put("/api/persons/:id", (request, response, next) => {
+  if (request.body.name && request.body.number) {
+    const id = request.params.id
+    Person.findByIdAndUpdate(id, {name: request.body.name, number: request.body.number}, {new: true})
     .then(person => response.send(person))
-    .catch(person => response.status(404).end())
+    .catch(error => next(error))
+  }
+  else {
+    next(new Error("InvalidBody"))
+  }
 })
 
 app.delete("/api/persons/:id", (request, response) => {
     const id = request.params.id
-    persons = persons.filter((per) => per.id != id)
-    response.status(204).end()
+    Person.findByIdAndDelete(id)
+    .then(data => response.status(204).end())
 })
 
-// const checkDuplicates = (name) => persons.find((per) => per.name === name)
-
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
     if (request.body.name && request.body.number) {
-        const newPerson = new Person({"name": request.body.name, "number": request.body.number})
-        newPerson.save().then(data => response.status(200).send(data))
+      const newPerson = new Person({"name": request.body.name, "number": request.body.number})
+      newPerson.save().then(data => response.status(200).send(data))
     }
     else {
-        response.status(400).json({error: "Your request must include a name and a number field"}).end()
-    }
+      next(new Error("InvalidBody"))
+    } 
 })
+
+const errorHandler = (error, request, response, next) => {
+  console.log(error.name)
+
+  if (error.name === "CastError") {
+    return response.status(400).send("Malformed ID")
+  }
+  if (error.message === "InvalidBody") {
+    return response.status(400).json({error: "Your request body must include a name and a number field"}).end()
+  }
+
+  next(error)
+
+}
+
+app.use(errorHandler)
