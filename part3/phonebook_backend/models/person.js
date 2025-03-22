@@ -12,6 +12,7 @@ const personSchema = new mongoose.Schema({
   number: {
     type: String,
     minLength: 8,
+    required: true,
     validate: {
       validator: number => number.match(/^\d{2,3}-\d+$/),
       message: props => `${props.value} doesn't match the required format: 000-00000`

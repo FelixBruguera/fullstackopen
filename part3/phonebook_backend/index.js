@@ -33,15 +33,10 @@ app.get("/api/persons/:id", (request, response, next) => {
 })
 
 app.put("/api/persons/:id", (request, response, next) => {
-  if (request.body.name && request.body.number) {
-    const id = request.params.id
-    Person.findByIdAndUpdate(id, {name: request.body.name, number: request.body.number}, {new: true, runValidators: true})
-    .then(person => response.send(person))
-    .catch(error => next(error))
-  }
-  else {
-    next(new Error("InvalidBody"))
-  }
+  const id = request.params.id
+  Person.findByIdAndUpdate(id, {name: request.body.name, number: request.body.number}, {new: true, runValidators: true})
+  .then(person => response.send(person))
+  .catch(error => next(error))
 })
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -51,15 +46,10 @@ app.delete("/api/persons/:id", (request, response) => {
 })
 
 app.post("/api/persons", (request, response, next) => {
-    if (request.body.name && request.body.number) {
-      const newPerson = new Person({"name": request.body.name, "number": request.body.number})
-      newPerson.save()
-      .then(data => response.status(200).send(data))
-      .catch(error => next(error))
-    }
-    else {
-      next(new Error("InvalidBody"))
-    } 
+    const newPerson = new Person({"name": request.body.name, "number": request.body.number})
+    newPerson.save()
+    .then(data => response.status(200).send(data))
+    .catch(error => next(error))
 })
 
 const errorHandler = (error, request, response, next) => {
@@ -70,9 +60,6 @@ const errorHandler = (error, request, response, next) => {
   }
   if (error.name === "ValidationError") {
     return response.status(400).send(error.message)
-  }
-  if (error.message === "InvalidBody") {
-    return response.status(400).json({error: "Your request body must include a name and a number field"}).end()
   }
 
   next(error)
