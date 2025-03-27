@@ -36,6 +36,7 @@ describe('with some blogs in the database', () => {
   })
 
   describe('when the request has valid data', () => {
+
     test('it is saved to the database', async() => {
       const newBlog = { title: 'Test', author: 'Developer', url: 'test.com', likes: 0 }
       const response = await api.post('/api/blogs').send(newBlog)
