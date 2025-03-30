@@ -1,16 +1,14 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
-const User = require('../models/user')
-const jwt = require('jsonwebtoken')
+const middleware = require('../utils/middleware')
 
 blogsRouter.get('/', async (request, response) => {
   const data = await Blog.find({}).populate('user', { username: 1, name: 1, id: 1 })
   response.json(data)
 })
 
-blogsRouter.post('/', async (request, response) => {
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  const user = await User.findById(decodedToken.id)
+blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
+  const user = request.user
   const contents = request.body
   const newBlog = new Blog({
     title: contents.title,
@@ -24,14 +22,23 @@ blogsRouter.post('/', async (request, response) => {
   response.status(201).json(data)
 })
 
-blogsRouter.delete('/', async (request, response) => {
-  const id = request.body.id
-  await Blog.findByIdAndDelete(id)
-  response.status(204).send()
+blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) => {
+  const user = request.user
+  const id = request.params.id
+  if (user.blogs.includes(id)) {
+    await Blog.findByIdAndDelete(id)
+    user.blogs = user.blogs.filter(blogId => blogId.toString() !== id)
+    await user.save()
+    response.status(204).send()
+  }
+  else {
+    response.status(401).send()
+  }
 })
 
-blogsRouter.put('/', async (request, response) => {
-  const { title, url, author, likes, id } = request.body
+blogsRouter.put('/:id', async (request, response) => {
+  const id = request.params.id
+  const { title, url, author, likes } = request.body
   const data = await Blog.findByIdAndUpdate(id, { title: title, url: url, author: author, likes: likes }, { new: true })
   response.json(data)
 })

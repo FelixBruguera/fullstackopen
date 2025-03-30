@@ -2,12 +2,11 @@ const supertest = require('supertest')
 const assert = require('node:assert')
 const { test, after, beforeEach, describe } = require('node:test')
 const mongoose = require('mongoose')
-const user = require('../models/user')
-const app = require('../app')
+const user = require('../../models/user')
+const app = require('../../app')
 const api = supertest(app)
-const helper = require('./helper')
-const testUsers = [{ username: 'root', name: 'Dev', passwordHash: 'securepassword' },
-  { username: 'user', name: 'Felix', passwordHash: 'helloworld' }]
+const helper = require('../helper')
+const testUsers = require('../testUsers')
 
 beforeEach( async () => {
   await user.deleteMany({})
@@ -16,19 +15,20 @@ beforeEach( async () => {
   }
 })
 
-describe('when the request has valid data', async () => {
+describe('when the request has valid data', () => {
+
   test('it returns all users', async() => {
     const response = await api.get('/api/users')
-    assert.strictEqual(response.body.length, 2)
+    assert.strictEqual(response.body.length, 3)
     const usernames = response.body.map(user => user.username)
     assert(usernames.includes(testUsers[0].username))
   })
 
   test('it creates a new user', async () => {
-    const userData = { username: 'test', name: 'Testing', password: 'securepassword' }
+    const userData = { username: 'testUser', name: 'Testing', password: 'securepassword' }
     const usersBefore = await helper.usersInDb()
-    const response = await api.post('/api/users').send(userData)
-    assert.strictEqual(response.statusCode, 201)
+    await api.post('/api/users').send(userData)
+      .expect(201)
     const usersAfter = await helper.usersInDb()
     const usernames = usersAfter.map(user => user.username)
     assert.strictEqual(usersAfter.length, (usersBefore.length + 1))
@@ -36,7 +36,8 @@ describe('when the request has valid data', async () => {
   })
 })
 
-describe('when the request has invalid data', async () => {
+describe('when the request has invalid data', () => {
+
   test('it returns 400 and the correct error message when the username is missing', async () => {
     const userData = { name: 'Dev', password: 'securepassword' }
     const usersBefore = await helper.usersInDb()
@@ -46,6 +47,7 @@ describe('when the request has invalid data', async () => {
     const usersAfter = await helper.usersInDb()
     assert.strictEqual(usersAfter.length, usersBefore.length)
   })
+
   test('it returns 400 and the correct error message when the username is too short', async () => {
     const userData = { username: 'a', name: 'Dev', password: 'securepassword' }
     const usersBefore = await helper.usersInDb()
@@ -56,6 +58,7 @@ describe('when the request has invalid data', async () => {
     const usersAfter = await helper.usersInDb()
     assert.strictEqual(usersAfter.length, usersBefore.length)
   })
+
   test('it returns 400 and the correct error message when the password is missing', async () => {
     const userData = { name: 'Dev', username: 'Unique' }
     const usersBefore = await helper.usersInDb()
@@ -65,6 +68,7 @@ describe('when the request has invalid data', async () => {
     const usersAfter = await helper.usersInDb()
     assert.strictEqual(usersAfter.length, usersBefore.length)
   })
+
   test('it returns 400 and the proper error message when the password is too short', async () => {
     const userData = { username: 'UserTest', name: 'Dev', password: 'a' }
     const usersBefore = await helper.usersInDb()
