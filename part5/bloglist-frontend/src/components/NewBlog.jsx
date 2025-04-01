@@ -1,4 +1,19 @@
-const NewBlog = ({ title, setTitle, author, setAuthor, url, setUrl, onSubmit }) => {
+import { useState } from 'react'
+
+const NewBlog = ({ postBlog }) => {
+    const [title, setTitle] = useState('')
+    const [author, setAuthor] = useState('')
+    const [url, setUrl] = useState('')
+
+    const onSubmit = (e) => {
+        e.preventDefault()
+        const data = {title: title, author: author, url: url}
+        postBlog(data)
+        setTitle('')
+        setAuthor('')
+        setUrl('')
+    }
+
     return (
         <form onSubmit={(e) => onSubmit(e)}>
             <label htmlFor="title">Title: </label>

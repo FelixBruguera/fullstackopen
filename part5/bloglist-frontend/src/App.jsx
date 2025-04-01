@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import Login from './components/Login'
 import NewBlog from './components/NewBlog'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import './styles/notification.css'
@@ -11,10 +12,8 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
   const [userValue, setUserValue] = useState('')
   const [passwordValue, setPasswordValue] = useState('')
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [notification, setNotification] = useState({})
+  const newBlogButton = useRef('')
   const [user, setUser] = useState(null)
 
   useEffect(() => {
@@ -39,9 +38,7 @@ const App = () => {
     setTimeout(() => setNotification({}), 5000)
   }
 
-  const handleNewBlog = async (e) => {
-    e.preventDefault()
-    const data = { title: title, author: author, url: url }
+  const handleNewBlog = async (data) => {
     try {
       const response = await blogService.create(data, user.token)
       setBlogs(blogs.concat(response))
@@ -50,12 +47,10 @@ const App = () => {
     catch(error) {
       handleNotification(error.response.data, 'error')
     }
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+    newBlogButton.current.toggleVisibility()
   }
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
     const credentials = { username: userValue, password: passwordValue }
     try {
@@ -81,7 +76,7 @@ const App = () => {
           setUser={setUserValue}
           passwordValue={passwordValue}
           setPassword={setPasswordValue}
-          onSubmit={handleSubmit}/>
+          onSubmit={handleLogin}/>
       </div>
     )
   }
@@ -94,15 +89,11 @@ const App = () => {
         <button type="button" onClick={() => logOut()}>Log out</button>
       </div>
       <h2>Create new blog</h2>
-      <NewBlog 
-        title={title} 
-        setTitle={setTitle}
-        author={author}
-        setAuthor={setAuthor}
-        url={url}
-        setUrl={setUrl}
-        onSubmit={handleNewBlog}
-      />
+      <Togglable buttonLabel='New Blog' reference={newBlogButton}> 
+        <NewBlog 
+          postBlog={handleNewBlog}
+        />
+      </Togglable>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
