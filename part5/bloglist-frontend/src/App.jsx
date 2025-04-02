@@ -19,7 +19,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( sortBlogs(blogs) )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -98,9 +98,9 @@ const App = () => {
         <Notification message={notification.message} type={notification.type}/>
         <h2>Log in</h2>
         <Login
-          userValue={userValue}
+          user={userValue}
           setUser={setUserValue}
-          passwordValue={passwordValue}
+          password={passwordValue}
           setPassword={setPasswordValue}
           onSubmit={handleLogin}/>
       </div>
@@ -115,8 +115,8 @@ const App = () => {
         <button type="button" onClick={() => logOut()}>Log out</button>
       </div>
       <h2>Create new blog</h2>
-      <Togglable buttonLabel='New Blog' reference={newBlogButton}> 
-        <NewBlog 
+      <Togglable buttonLabel='New Blog' reference={newBlogButton}>
+        <NewBlog
           postBlog={handleNewBlog}
         />
       </Togglable>
