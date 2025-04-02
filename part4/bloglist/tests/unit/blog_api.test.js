@@ -57,9 +57,9 @@ describe('with some blogs in the database', () => {
 
       test('it is saved to the database', async() => {
         const newBlog = { title: 'Test', author: 'Developer', url: 'test.com', likes: 0 }
-        const response = await api.post('/api/blogs').set({ Authorization: `Bearer ${this.token}` }).send(newBlog)
+        await api.post('/api/blogs').set({ Authorization: `Bearer ${this.token}` }).send(newBlog)
+          .expect(201)
         const blogsAfter = await helper.blogsInDb()
-        assert.strictEqual(response.statusCode, 201)
         assert.strictEqual(blogsAfter.length, (helper.initialBlogs.length + 1))
       })
 
@@ -80,10 +80,10 @@ describe('with some blogs in the database', () => {
         const blogs = await blog.find({})
         const deletedBlog = blogs[0]
         const id = deletedBlog._id.toString()
-        const response = await api.delete(`/api/blogs/${id}`).set({ Authorization: `Bearer ${this.token}` })
+        await api.delete(`/api/blogs/${id}`).set({ Authorization: `Bearer ${this.token}` })
+          .expect(204)
         const blogsAfter = await helper.blogsInDb()
         const titles = blogsAfter.map(blog => blog.title)
-        assert.strictEqual(response.statusCode, 204)
         assert.strictEqual(blogsAfter.length, helper.initialBlogs.length - 1)
         assert(!titles.includes(deletedBlog.title))
       })
@@ -91,7 +91,8 @@ describe('with some blogs in the database', () => {
       test('it updates an existing blog', async() => {
         const blogs = await helper.blogsInDb()
         const editedBlog = { ...blogs[2], likes: 10000 }
-        await api.put(`/api/blogs/${editedBlog.id}`).send(editedBlog)
+        await api.put(`/api/blogs/${editedBlog.id}`).set({ Authorization: `Bearer ${this.token}` }).send(editedBlog)
+          .expect(200)
         const blogsAfter = await helper.blogsInDb()
         const blogAfter = blogsAfter.find(blog => blog.id === editedBlog.id)
         assert.deepStrictEqual(blogAfter, editedBlog)
@@ -102,17 +103,17 @@ describe('with some blogs in the database', () => {
 
       test('it returns 400 and doesnt save to the database when the title is missing', async () => {
         const newBlog = { author: 'Developer', likes: 100, url: 'test.com' }
-        const response = await api.post('/api/blogs').set({ Authorization: `Bearer ${this.token}` }).send(newBlog)
+        await api.post('/api/blogs').set({ Authorization: `Bearer ${this.token}` }).send(newBlog)
+          .expect(400)
         const blogsAfter = await helper.blogsInDb()
-        assert.strictEqual(response.statusCode, 400)
         assert.strictEqual(blogsAfter.length, helper.initialBlogs.length)
       })
 
       test('it returns 400 and doesnt save to the database when the url is missing', async () => {
         const newBlog = { author: 'Developer', likes: 100, title: 'Test' }
-        const response = await api.post('/api/blogs').set({ Authorization: `Bearer ${this.token}` }).send(newBlog)
+        await api.post('/api/blogs').set({ Authorization: `Bearer ${this.token}` }).send(newBlog)
+          .expect(400)
         const blogsAfter = await helper.blogsInDb()
-        assert.strictEqual(response.statusCode, 400)
         assert.strictEqual(blogsAfter.length, helper.initialBlogs.length)
       })
     })
@@ -122,9 +123,9 @@ describe('with some blogs in the database', () => {
 
     test('it returns 401 Unauthorized and doesnt save to the database', async() => {
       const newBlog = { title: 'Test', author: 'Developer', url: 'test.com', likes: 0 }
-      const response = await api.post('/api/blogs').set({ Authorization: `Bearer ${this.token}test`  }).send(newBlog)
+      await api.post('/api/blogs').set({ Authorization: `Bearer ${this.token}test`  }).send(newBlog)
+        .expect(401)
       const blogsAfter = await helper.blogsInDb()
-      assert.strictEqual(response.statusCode, 401)
       assert.strictEqual(blogsAfter.length, helper.initialBlogs.length)
     })
 
@@ -132,9 +133,9 @@ describe('with some blogs in the database', () => {
       const blogs = await blog.find({})
       const deletedBlog = blogs[0]
       const id = deletedBlog._id.toString()
-      const response = await api.delete(`/api/blogs/${id}`).set({ Authorization: `Bearer ${this.token}test` })
+      await api.delete(`/api/blogs/${id}`).set({ Authorization: `Bearer ${this.token}test` })
+        .expect(401)
       const blogsAfter = await helper.blogsInDb()
-      assert.strictEqual(response.statusCode, 401)
       assert.strictEqual(blogsAfter.length, helper.initialBlogs.length)
     })
   })
@@ -143,9 +144,9 @@ describe('with some blogs in the database', () => {
 
     test('it returns 401 Unauthorized and does not save to the database', async() => {
       const newBlog = { title: 'Test', author: 'Developer', url: 'test.com', likes: 0 }
-      const response = await api.post('/api/blogs').send(newBlog)
+      await api.post('/api/blogs').send(newBlog)
+        .expect(401)
       const blogsAfter = await helper.blogsInDb()
-      assert.strictEqual(response.statusCode, 401)
       assert.strictEqual(blogsAfter.length, helper.initialBlogs.length)
     })
 
@@ -153,9 +154,9 @@ describe('with some blogs in the database', () => {
       const blogs = await blog.find({})
       const deletedBlog = blogs[0]
       const id = deletedBlog._id.toString()
-      const response = await api.delete(`/api/blogs/${id}`)
+      await api.delete(`/api/blogs/${id}`)
+        .expect(401)
       const blogsAfter = await helper.blogsInDb()
-      assert.strictEqual(response.statusCode, 401)
       assert.strictEqual(blogsAfter.length, helper.initialBlogs.length)
     })
   })

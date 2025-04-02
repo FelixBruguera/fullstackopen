@@ -18,7 +18,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
+      setBlogs( sortBlogs(blogs) )
     )  
   }, [])
 
@@ -27,10 +27,36 @@ const App = () => {
     if (session) { setUser(JSON.parse(session)) }
   }, [])
 
+  const sortBlogs = (blogs) => blogs.sort((a, b) => b.likes - a.likes)
+
   const logOut = () => {
     localStorage.removeItem('currentUser')
     setUser(null)
     handleNotification('Succesfully logged out', 'info')
+  }
+
+  const handleDelete = async (data) => {
+    try {
+      const response = await blogService.remove(data, user.token)
+      const updatedBlogs = blogs.filter(blog => blog.id !== data.id)
+      setBlogs(updatedBlogs)
+      handleNotification(`Succesfully deleted ${data.title} by ${data.author}`, 'info')
+    }
+    catch(error) {
+      handleNotification(error.response.data, 'error')
+    }
+  }
+
+  const handleUpdate = async (data) => {
+    try {
+      const response = await blogService.update(data, user.token)
+      const updatedBlogs = blogs.map(blog => blog.id === data.id ? response : blog)
+      setBlogs(sortBlogs(updatedBlogs))
+      handleNotification(`Succesfully updated ${response.title} by ${response.author}`, 'info')
+    }
+    catch(error) {
+      handleNotification(error.response.data, 'error')
+    }
   }
 
   const handleNotification = (message, type) => {
@@ -95,7 +121,7 @@ const App = () => {
         />
       </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} putBlog={handleUpdate} deleteBlog={handleDelete}/>
       )}
     </div>
   )
