@@ -14,17 +14,20 @@ const Blog = ({ blog, putBlog, deleteBlog }) => {
   }
 
   return (
-    <div style={{ border: '1px solid black', padding: '5px' }}>
-      {blog.title} {blog.author}
+    <div className='blog' style={{ border: '1px solid black', padding: '5px' }}>
+      <div style={{ display: 'flex' }}>
+        <p className='blog-title'>{blog.title} </p>
+        <p className='blog-author'>{blog.author}</p>
+      </div>
       <Togglable buttonLabel='View Details'>
         <div>
-          <a href={blog.url} rel='noreferrer' target="_blank">{blog.url}</a>
+          <a className='blog-url' href={blog.url} rel='noreferrer' target="_blank">{blog.url}</a>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <p>Likes: {blog.likes}</p>
-            <button type="button" onClick={() => handleLike()}>Like</button>
+            <p className='blog-likes'>Likes: {blog.likes}</p>
+            <button className='blog-like' type="button" onClick={() => handleLike()}>Like</button>
           </div>
-          <p>{blog.author}</p>
-          <button type="button" onClick={() => handleDelete()}>Delete</button>
+          {blog.user ? (<p>{blog.user.name}</p>) : null }
+          <button className='blog-delete' type="button" onClick={() => handleDelete()}>Delete</button>
         </div>
       </Togglable>
     </div>
