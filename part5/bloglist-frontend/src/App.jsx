@@ -83,7 +83,7 @@ const App = () => {
       const response = await loginService.login(credentials)
       setUser(response)
       localStorage.setItem('currentUser', JSON.stringify(response))
-      handleNotification('Succesfully loged in', 'info')
+      handleNotification('Succesfully logged in', 'info')
     }
     catch(error) {
       handleNotification(error.response.data, 'error')
@@ -111,7 +111,7 @@ const App = () => {
       <Notification message={notification.message} type={notification.type}/>
       <h2>blogs</h2>
       <div>
-        <p> <b>{user.name}</b> logged in</p>
+        <p> {user.name} logged in</p>
         <button type="button" onClick={() => logOut()}>Log out</button>
       </div>
       <h2>Create new blog</h2>
@@ -121,7 +121,7 @@ const App = () => {
         />
       </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} putBlog={handleUpdate} deleteBlog={handleDelete}/>
+        <Blog key={blog.id} blog={blog} putBlog={handleUpdate} deleteBlog={handleDelete} userId={user.id}/>
       )}
     </div>
   )

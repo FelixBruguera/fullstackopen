@@ -5,6 +5,7 @@ const Login = ({ user, setUser, password, setPassword, onSubmit }) => {
     <form onSubmit={(e) => onSubmit(e)}>
       <label htmlFor="username">Username: </label>
       <input
+        data-testid='username'
         id="username"
         type="text"
         value={user}
@@ -12,6 +13,7 @@ const Login = ({ user, setUser, password, setPassword, onSubmit }) => {
       </input>
       <label htmlFor="password">Password: </label>
       <input
+        data-testid='password'
         id="password"
         type="password"
         value={password}
