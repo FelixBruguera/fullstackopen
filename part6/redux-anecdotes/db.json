@@ -1,0 +1,94 @@
+{
+  "anecdotes": [
+    {
+      "content": "If it hurts, do it more often",
+      "id": "47145",
+      "votes": 10
+    },
+    {
+      "content": "Adding manpower to a late software project makes it later!",
+      "id": "21149",
+      "votes": 0
+    },
+    {
+      "content": "The first 90 percent of the code accounts for the first 10 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.",
+      "id": "69581",
+      "votes": 0
+    },
+    {
+      "content": "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
+      "id": "36975",
+      "votes": 0
+    },
+    {
+      "content": "Premature optimization is the root of all evil.",
+      "id": "25170",
+      "votes": 0
+    },
+    {
+      "content": "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.",
+      "id": "98312",
+      "votes": 0
+    },
+    {
+      "id": "fe21",
+      "content": "Test",
+      "votes": 0
+    },
+    {
+      "id": "acb3",
+      "content": "Testing",
+      "votes": 0
+    },
+    {
+      "id": "e52a",
+      "content": "Testing again",
+      "votes": 100
+    },
+    {
+      "id": "cb02",
+      "content": "Testing once more",
+      "votes": 0
+    },
+    {
+      "id": "e2ac",
+      "content": "Neww",
+      "votes": 13
+    },
+    {
+      "id": "2f71",
+      "content": "Testing thunk",
+      "votes": 57
+    },
+    {
+      "id": "aa52",
+      "content": "Updated",
+      "votes": 100
+    },
+    {
+      "id": "0dca",
+      "content": "Later",
+      "votes": 0
+    },
+    {
+      "id": "9154",
+      "content": "Wee",
+      "votes": 0
+    },
+    {
+      "id": "25be",
+      "content": "Wii",
+      "votes": 0
+    },
+    {
+      "id": "ffcd",
+      "content": "Hello",
+      "votes": 3
+    },
+    {
+      "id": "e41f",
+      "content": "Welcome",
+      "votes": 0
+    }
+  ]
+}
