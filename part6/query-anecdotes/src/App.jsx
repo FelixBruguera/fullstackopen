@@ -1,15 +1,20 @@
 import AnecdoteForm from './components/AnecdoteForm'
 import Notification from './components/Notification'
+import Anecdote from './components/Anecdote'
+import { useContext } from "react"
+import { NotificationContext } from "./components/NotificationContextProvider"
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import anecdoteService from "./services/anecdote"
 
 const App = () => {
   const client = useQueryClient()
+  const [notification, setNotification] = useContext(NotificationContext)
 
   const mutation = useMutation({
     mutationFn: anecdoteService.update,
     onSuccess: (data) => {
       client.setQueryData(["anecdotes"], (old) => old.map(anecdote => anecdote.id === data.id ? data : anecdote))
+      setNotification(`Vote added for ${data.content}`)
     }
   })
 
@@ -37,21 +42,12 @@ const App = () => {
   return (
     <div>
       <h3>Anecdote app</h3>
-    
       <Notification />
       <AnecdoteForm />
-    
       {data.map(anecdote =>
-        <div key={anecdote.id}>
-          <div>
-            {anecdote.content}
-          </div>
-          <div>
-            has {anecdote.votes}
-            <button onClick={() => handleVote(anecdote)}>vote</button>
-          </div>
-        </div>
-      )}
+        <Anecdote key={anecdote.id} anecdote={anecdote} handleVote={handleVote} />
+        )
+      }
     </div>
   )
 }
