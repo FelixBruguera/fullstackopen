@@ -33,6 +33,9 @@ if (process.env.NODE_ENV === 'test') {
   const testingRouter = require('./controllers/testing')
   app.use('/api/testing', testingRouter)
 }
+app.get('/api/env', async (request, response) => {
+  response.json({ env: process.env.NODE_ENV })
+})
 app.use(middleware.errorHandler)
 
 module.exports = app

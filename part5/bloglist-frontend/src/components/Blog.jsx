@@ -27,7 +27,7 @@ const Blog = ({ blog, putBlog, deleteBlog, userId }) => {
             <button className='blog-like' type="button" onClick={() => handleLike()}>Like</button>
           </div>
           {blog.user ? (<p>{blog.user.name}</p>) : null }
-          {userId === blog.user.toString()
+          {userId === blog.user?.toString()
             ? <button className='blog-delete' type="button" onClick={() => handleDelete()}>Delete</button>
             : null
           }
