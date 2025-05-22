@@ -4,15 +4,14 @@ import '@testing-library/jest-dom'
 import userEvent from '@testing-library/user-event'
 import Blog from '../components/Blog'
 
-
 test('renders a blog', () => {
   const testBlog = {
     title: 'Testing react',
     author: 'Vitest',
     url: 'www.vitest.com',
-    likes: 2
+    likes: 2,
   }
-  const { container } = render(<Blog blog={testBlog}/>)
+  const { container } = render(<Blog blog={testBlog} />)
 
   const element = container.querySelector('.blog')
   const title = screen.getByText(testBlog.title)
@@ -33,9 +32,9 @@ test('shows the blogs details when clicked', async () => {
     title: 'Testing react',
     author: 'Vitest',
     url: 'www.vitest.com',
-    likes: 2
+    likes: 2,
   }
-  const { container } = render(<Blog blog={testBlog}/>)
+  const { container } = render(<Blog blog={testBlog} />)
   const user = userEvent.setup()
   const detailsButton = screen.getByText('View Details')
   await user.click(detailsButton)
@@ -55,10 +54,10 @@ test('the like button calls the passed function', async () => {
     title: 'Testing react',
     author: 'Vitest',
     url: 'www.vitest.com',
-    likes: 2
+    likes: 2,
   }
   const onLike = vi.fn()
-  const { container } = render(<Blog blog={testBlog} putBlog={onLike}/>)
+  const { container } = render(<Blog blog={testBlog} putBlog={onLike} />)
   const user = userEvent.setup()
   const detailsButton = screen.getByText('View Details')
   await user.click(detailsButton)

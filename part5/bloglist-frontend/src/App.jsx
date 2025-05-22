@@ -17,14 +17,14 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( sortBlogs(blogs) )
-    )
+    blogService.getAll().then((blogs) => setBlogs(sortBlogs(blogs)))
   }, [])
 
   useEffect(() => {
     const session = localStorage.getItem('currentUser')
-    if (session) { setUser(JSON.parse(session)) }
+    if (session) {
+      setUser(JSON.parse(session))
+    }
   }, [])
 
   const sortBlogs = (blogs) => blogs.sort((a, b) => b.likes - a.likes)
@@ -38,11 +38,13 @@ const App = () => {
   const handleDelete = async (data) => {
     try {
       const response = await blogService.remove(data, user.token)
-      const updatedBlogs = blogs.filter(blog => blog.id !== data.id)
+      const updatedBlogs = blogs.filter((blog) => blog.id !== data.id)
       setBlogs(updatedBlogs)
-      handleNotification(`Succesfully deleted ${data.title} by ${data.author}`, 'info')
-    }
-    catch(error) {
+      handleNotification(
+        `Succesfully deleted ${data.title} by ${data.author}`,
+        'info',
+      )
+    } catch (error) {
       handleNotification(error.response.data, 'error')
     }
   }
@@ -50,11 +52,15 @@ const App = () => {
   const handleUpdate = async (data) => {
     try {
       const response = await blogService.update(data, user.token)
-      const updatedBlogs = blogs.map(blog => blog.id === data.id ? response : blog)
+      const updatedBlogs = blogs.map((blog) =>
+        blog.id === data.id ? response : blog,
+      )
       setBlogs(sortBlogs(updatedBlogs))
-      handleNotification(`Succesfully updated ${response.title} by ${response.author}`, 'info')
-    }
-    catch(error) {
+      handleNotification(
+        `Succesfully updated ${response.title} by ${response.author}`,
+        'info',
+      )
+    } catch (error) {
       handleNotification(error.response.data, 'error')
     }
   }
@@ -68,9 +74,11 @@ const App = () => {
     try {
       const response = await blogService.create(data, user.token)
       setBlogs(blogs.concat(response))
-      handleNotification(`Succesfully added ${response.title} by ${response.author}`, 'info')
-    }
-    catch(error) {
+      handleNotification(
+        `Succesfully added ${response.title} by ${response.author}`,
+        'info',
+      )
+    } catch (error) {
       handleNotification(error.response.data, 'error')
     }
     newBlogButton.current.toggleVisibility()
@@ -84,8 +92,7 @@ const App = () => {
       setUser(response)
       localStorage.setItem('currentUser', JSON.stringify(response))
       handleNotification('Succesfully logged in', 'info')
-    }
-    catch(error) {
+    } catch (error) {
       handleNotification(error.response.data, 'error')
     }
     setUserValue('')
@@ -95,34 +102,41 @@ const App = () => {
   if (user === null) {
     return (
       <div>
-        <Notification message={notification.message} type={notification.type}/>
+        <Notification message={notification.message} type={notification.type} />
         <h2>Log in</h2>
         <Login
           user={userValue}
           setUser={setUserValue}
           password={passwordValue}
           setPassword={setPasswordValue}
-          onSubmit={handleLogin}/>
+          onSubmit={handleLogin}
+        />
       </div>
     )
   }
   return (
     <div>
-      <Notification message={notification.message} type={notification.type}/>
+      <Notification message={notification.message} type={notification.type} />
       <h2>blogs</h2>
       <div>
         <p> {user.name} logged in</p>
-        <button type="button" onClick={() => logOut()}>Log out</button>
+        <button type="button" onClick={() => logOut()}>
+          Log out
+        </button>
       </div>
       <h2>Create new blog</h2>
-      <Togglable buttonLabel='New Blog' reference={newBlogButton}>
-        <NewBlog
-          postBlog={handleNewBlog}
-        />
+      <Togglable buttonLabel="New Blog" reference={newBlogButton}>
+        <NewBlog postBlog={handleNewBlog} />
       </Togglable>
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} putBlog={handleUpdate} deleteBlog={handleDelete} userId={user.id}/>
-      )}
+      {blogs.map((blog) => (
+        <Blog
+          key={blog.id}
+          blog={blog}
+          putBlog={handleUpdate}
+          deleteBlog={handleDelete}
+          userId={user.id}
+        />
+      ))}
     </div>
   )
 }

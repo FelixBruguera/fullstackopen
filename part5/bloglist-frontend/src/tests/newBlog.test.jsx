@@ -7,7 +7,7 @@ import NewBlog from '../components/NewBlog'
 test('it calls the event handler with the right data', async () => {
   const handleNewBlog = vi.fn()
   const user = userEvent.setup()
-  const { container } = render(<NewBlog postBlog={ handleNewBlog }/>)
+  const { container } = render(<NewBlog postBlog={handleNewBlog} />)
   const title = container.querySelector('#title')
   const author = container.querySelector('#author')
   const url = container.querySelector('#url')

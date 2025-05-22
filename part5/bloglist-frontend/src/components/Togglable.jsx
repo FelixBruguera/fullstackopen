@@ -14,21 +14,24 @@ const Togglable = (props) => {
     return (
       <div>
         {props.children}
-        <button type="button" onClick={ () => toggleVisibility() }>Close</button>
+        <button type="button" onClick={() => toggleVisibility()}>
+          Close
+        </button>
       </div>
     )
-  }
-  else {
+  } else {
     return (
       <>
-        <button type="button" onClick={ () => toggleVisibility() }>{props.buttonLabel}</button>
+        <button type="button" onClick={() => toggleVisibility()}>
+          {props.buttonLabel}
+        </button>
       </>
     )
   }
 }
 
 Togglable.propTypes = {
-  buttonLabel: PropTypes.string.isRequired
+  buttonLabel: PropTypes.string.isRequired,
 }
 
 export default Togglable
