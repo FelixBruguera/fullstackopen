@@ -71,11 +71,11 @@ describe('Blog app', async () => {
                 await expect(page.getByText('Succesfully Deleted', {exact: false})).toBeVisible()
             })
             test('the blogs are sorted by likes', async({ page }) => {
-                await likeBlog(page, 'Loren Ipsum', 3)
+                await likeBlog(page, 'Loren Ipsum', 2)
                 await likeBlog(page, 'Second Blog', 1)
                 await expect(page.locator('.blog').first()).toContainText('Loren Ipsum')
                 await page.locator('.blog').filter({ hasText: 'Loren Ipsum'}).locator('button').click()
-                await expect(page.locator('.blog-likes')).toHaveText('Likes: 3')
+                await expect(page.locator('.blog-likes')).toHaveText('Likes: 2')
                 await page.getByRole('button', { name: 'Close' }).click()
                 await expect(page.locator('.blog').last()).toContainText('Test Blog')
                 await page.locator('.blog').filter({ hasText: 'Test Blog'}).locator('button').click()

@@ -3,7 +3,7 @@ const Blog = require('../models/blog')
 const middleware = require('../utils/middleware')
 
 blogsRouter.get('/', async (request, response) => {
-  const data = await Blog.find({}).populate('user', { username: 1, name: 1, id: 1 })
+  const data = await Blog.find({}).populate('user', { name: 1, id: 1 })
   response.json(data)
 })
 
@@ -16,10 +16,12 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
     url: contents.url,
     likes: contents.likes || 0,
     user: user.id })
-  const data = await newBlog.save()
-  user.blogs = user.blogs.concat(data._id)
+  const blog = await newBlog.save()
+  user.blogs = user.blogs.concat(blog._id)
   await user.save()
-  response.status(201).json(data)
+  const blogForResponse = blog.toJSON()
+  blogForResponse.user = { name: user.name, id: user.id }
+  response.status(201).json(blogForResponse)
 })
 
 blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) => {
@@ -42,8 +44,10 @@ blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
   const id = request.params.id
   const updatedBlog = request.body
   updatedBlog.user = user.id
-  const data = await Blog.findByIdAndUpdate(id, updatedBlog, { new: true })
-  response.json(data)
+  const blog = await Blog.findByIdAndUpdate(id, updatedBlog, { new: true })
+  const blogForResponse = blog.toJSON()
+  blogForResponse.user = { name: user.name, id: user.id }
+  response.json(blogForResponse)
 })
 
 module.exports = blogsRouter

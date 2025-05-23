@@ -11,6 +11,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.76.2",
     "axios": "^1.4.0",
     "jest": "^29.7.0",
     "prop-types": "^15.8.1",

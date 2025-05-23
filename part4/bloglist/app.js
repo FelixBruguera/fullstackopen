@@ -12,6 +12,7 @@ const morgan = require('morgan')
 morgan.token('body', (req) => JSON.stringify(req.body))
 
 mongoose.set('strictQuery', false)
+mongoose.set('debug', true)
 const mongoUrl = config.DB_URL
 
 mongoose.connect(mongoUrl)

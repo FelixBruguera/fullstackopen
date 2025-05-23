@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useContext } from 'react'
 import Blog from './components/Blog'
 import Login from './components/Login'
 import NewBlog from './components/NewBlog'
@@ -6,13 +6,14 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import { NotificationContext } from './components/NotificationContextProvider'
 import './styles/notification.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [userValue, setUserValue] = useState('')
   const [passwordValue, setPasswordValue] = useState('')
-  const [notification, setNotification] = useState({})
+  const [notification, handleNotification] = useContext(NotificationContext)
   const newBlogButton = useRef('')
   const [user, setUser] = useState(null)
 
@@ -63,11 +64,6 @@ const App = () => {
     } catch (error) {
       handleNotification(error.response.data, 'error')
     }
-  }
-
-  const handleNotification = (message, type) => {
-    setNotification({ message: message, type: type })
-    setTimeout(() => setNotification({}), 5000)
   }
 
   const handleNewBlog = async (data) => {

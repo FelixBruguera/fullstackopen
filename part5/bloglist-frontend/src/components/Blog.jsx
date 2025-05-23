@@ -41,7 +41,7 @@ const Blog = ({ blog, putBlog, deleteBlog, userId }) => {
             </button>
           </div>
           {blog.user ? <p>{blog.user.name}</p> : null}
-          {userId === blog.user?.toString() ? (
+          {userId === blog.user?.id.toString() ? (
             <button
               className="blog-delete"
               type="button"
