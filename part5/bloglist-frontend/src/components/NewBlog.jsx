@@ -1,42 +1,27 @@
-import { useState } from 'react'
+import useBlogMutation from '../hooks/useBlogMutation'
 
-const NewBlog = ({ postBlog }) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+const NewBlog = ({ togglable }) => {
+  const blogService = useBlogMutation()
 
   const onSubmit = (e) => {
     e.preventDefault()
-    const data = { title: title, author: author, url: url }
-    postBlog(data)
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+    const data = {
+      title: e.target.title.value,
+      author: e.target.author.value,
+      url: e.target.url.value,
+    }
+    blogService.create.mutate(data)
+    togglable.current.toggleVisibility()
   }
 
   return (
     <form onSubmit={(e) => onSubmit(e)}>
       <label htmlFor="title">Title: </label>
-      <input
-        id="title"
-        type="text"
-        value={title}
-        onChange={({ target }) => setTitle(target.value)}
-      ></input>
+      <input id="title" type="text" name="title"></input>
       <label htmlFor="author">Author: </label>
-      <input
-        id="author"
-        type="text"
-        value={author}
-        onChange={({ target }) => setAuthor(target.value)}
-      ></input>
+      <input id="author" type="text" name="author"></input>
       <label htmlFor="url">Url: </label>
-      <input
-        id="url"
-        type="text"
-        value={url}
-        onChange={({ target }) => setUrl(target.value)}
-      ></input>
+      <input id="url" type="text" name="url"></input>
       <button type="submit">Save</button>
     </form>
   )
