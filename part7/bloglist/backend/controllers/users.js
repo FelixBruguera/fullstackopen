@@ -7,6 +7,13 @@ userRouter.get('/', async (request, response) => {
   response.status(200).json(data)
 })
 
+userRouter.get('/:id', async (request, response) => {
+  const id = request.params.id
+  const data = await User.findById(id).populate('blogs', { title: 1, id: 1 })
+  console.log(data)
+  response.status(200).json(data)
+})
+
 userRouter.post('/', async (request, response) => {
   const { username, name, password } = request.body
   if (!password) { return response.status(400).json({ error: 'User validation failed: username: Path `password` is required.' })}

@@ -4,19 +4,16 @@ import Login from './components/Login'
 import NewBlog from './components/NewBlog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import BlogList from './components/BlogList'
+import UserList from './components/UserList'
+import User from './components/User'
 import './styles/notification.css'
-import useBlogs from './hooks/useBlogs'
 import useAuth from './hooks/useAuth'
+import { Route, Routes } from 'react-router'
 
 const App = () => {
-  const newBlogButton = useRef('')
   const [user, userService] = useAuth()
-  const [data, isLoading, error] = useBlogs()
   console.log('Render app')
-
-  if (isLoading) {
-    return <p>Loading...</p>
-  }
 
   if (user.id === null) {
     return (
@@ -26,8 +23,6 @@ const App = () => {
       </div>
     )
   }
-
-  const blogs = data.sort((a, b) => b.likes - a.likes)
 
   return (
     <div>
@@ -39,15 +34,11 @@ const App = () => {
           Log out
         </button>
       </div>
-      <h2>Create new blog</h2>
-      <Togglable buttonLabel="New Blog" reference={newBlogButton}>
-        <NewBlog togglable={newBlogButton} />
-      </Togglable>
-      <ul>
-        {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} userId={user.id} />
-        ))}
-      </ul>
+      <Routes>
+        <Route path='/' element={<BlogList userId={user.id}/>}/>
+        <Route path='/users' element={<UserList/>}/>
+        <Route path='/users/:id' element={<User />}/>
+      </Routes>
     </div>
   )
 }
