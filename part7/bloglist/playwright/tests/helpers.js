@@ -14,12 +14,12 @@ const createBlog = async (page, data) => {
 }
 
 const likeBlog = async (page, blogName, times) => {         
-    await page.locator('.blog').filter({ hasText: blogName}).locator('button').click()
+    await page.getByRole('link', {name: blogName}).click()
     for (let i = 1; i < times+1; i++) {
         await page.getByRole('button', { name: 'Like' }).click()
         await page.getByText(`Likes: ${i}`).waitFor()
     }
-    await page.getByRole('button', { name: 'Close' }).click()
+    await page.getByRole('link', {name: "Blogs"}).click()
 }
 
 module.exports = { loginWith, createBlog, likeBlog }

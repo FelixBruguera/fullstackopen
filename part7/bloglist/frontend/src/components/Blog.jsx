@@ -1,42 +1,47 @@
-import { memo } from 'react'
 import Togglable from './Togglable'
 import useBlogMutation from '../hooks/useBlogMutation'
+import useBlog from '../hooks/useBlog'
+import { useParams, useNavigate } from 'react-router'
 
-const Blog = memo(function Blog({ blog, userId }) {
+const Blog = ({ userId }) => {
+  const params = useParams()
   const blogService = useBlogMutation()
-  console.log('Blog Render')
+  const [data, isLoading, error] = useBlog(params.id)
+  const navigate = useNavigate()
 
   const handleLike = () => {
-    const updatedBlog = { ...blog, likes: blog.likes + 1 }
+    const updatedBlog = { ...data, likes: data.likes + 1 }
     blogService.update.mutate(updatedBlog)
   }
   const handleDelete = () => {
     const confirmation = window.confirm(
-      `Removing ${blog.title} by ${blog.author}, are you sure?`,
+      `Removing ${data.title} by ${data.author}, are you sure?`,
     )
     if (confirmation) {
-      blogService.remove.mutate(blog)
+      blogService.remove.mutate(data)
     }
   }
+    if (isLoading) {
+        return <p>Loading...</p>
+    }
 
   return (
-    <li className="blog" style={{ border: '1px solid black', padding: '5px' }}>
+    <div>
       <div style={{ display: 'flex' }}>
-        <p className="blog-title">{blog.title} </p>
-        <p className="blog-author">{blog.author}</p>
+        <h1 className="blog-title">{data.title} </h1>
+        <h3 className="blog-author">{data.author}</h3>
       </div>
-      <Togglable buttonLabel="View Details">
-        <div>
+      <div>
           <a
             className="blog-url"
-            href={blog.url}
+            href={data.url}
             rel="noreferrer"
             target="_blank"
           >
-            {blog.url}
+            {data.url}
           </a>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <p className="blog-likes">Likes: {blog.likes}</p>
+            <p className="blog-likes">Likes: {data.likes}</p>
             <button
               className="blog-like"
               type="button"
@@ -45,8 +50,8 @@ const Blog = memo(function Blog({ blog, userId }) {
               Like
             </button>
           </div>
-          {blog.user ? <p>{blog.user.name}</p> : null}
-          {userId === blog.user?.id.toString() ? (
+          {data.user ? <p>Added by {data.user.name}</p> : null}
+          {userId === data.user?.id.toString() ? (
             <button
               className="blog-delete"
               type="button"
@@ -55,10 +60,9 @@ const Blog = memo(function Blog({ blog, userId }) {
               Delete
             </button>
           ) : null}
-        </div>
-      </Togglable>
-    </li>
+      </div>
+    </div>
   )
-})
+}
 
 export default Blog

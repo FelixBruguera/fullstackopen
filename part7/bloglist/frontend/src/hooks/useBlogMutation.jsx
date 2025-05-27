@@ -2,11 +2,13 @@ import { useQueryClient, useMutation } from '@tanstack/react-query'
 import blogService from '../services/blogs'
 import { handleNotification } from '../reducers/notificationReducer'
 import { useSelector, useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router'
 
 const useBlogMutation = () => {
   const client = useQueryClient()
   const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const create = useMutation({
     mutationFn: (data) => blogService.create(data, user.token),
@@ -26,9 +28,7 @@ const useBlogMutation = () => {
   const update = useMutation({
     mutationFn: (data) => blogService.update(data, user.token),
     onSuccess: (response) => {
-      client.setQueryData(['blogs'], (old) =>
-        old.map((blog) => (blog.id === response.id ? response : blog)),
-      )
+      client.setQueryData(['blog', response.id], () => response),
       dispatch(
         handleNotification(
           `Succesfully updated ${response.title} by ${response.author}`,
@@ -46,15 +46,14 @@ const useBlogMutation = () => {
       data
     },
     onSuccess: (response, context) => {
-      client.setQueryData(['blogs'], (old) =>
-        old.filter((blog) => blog.id !== context.id),
-      )
+      client.removeQueries(['blog', context.id])
       dispatch(
         handleNotification(
           `Succesfully deleted ${context.title} by ${context.author}`,
           'info',
         ),
       )
+      navigate('/')
     },
     onError: (error) =>
       dispatch(handleNotification(error.response.data, 'error')),

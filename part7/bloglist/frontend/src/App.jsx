@@ -7,6 +7,7 @@ import Togglable from './components/Togglable'
 import BlogList from './components/BlogList'
 import UserList from './components/UserList'
 import User from './components/User'
+import Nav from './components/Nav'
 import './styles/notification.css'
 import useAuth from './hooks/useAuth'
 import { Route, Routes } from 'react-router'
@@ -26,18 +27,14 @@ const App = () => {
 
   return (
     <div>
+      <Nav user={user} userService={userService}/>
       <Notification />
       <h2>Blogs</h2>
-      <div>
-        <p> {user.name} logged in</p>
-        <button type="button" onClick={() => userService.logout()}>
-          Log out
-        </button>
-      </div>
       <Routes>
-        <Route path='/' element={<BlogList userId={user.id}/>}/>
+        <Route path='/' element={<BlogList />}/>
         <Route path='/users' element={<UserList/>}/>
         <Route path='/users/:id' element={<User />}/>
+        <Route path='/blogs/:id' element={<Blog userId={user.id}/>} />
       </Routes>
     </div>
   )

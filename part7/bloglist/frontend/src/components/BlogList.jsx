@@ -1,10 +1,10 @@
 import Togglable from './Togglable'
 import NewBlog from './NewBlog'
-import Blog from './Blog'
+import BlogLink from './BlogLink'
 import { useRef } from 'react'
 import useBlogs from '../hooks/useBlogs'
 
-const BlogList = ({ userId }) => {
+const BlogList = () => {
     const newBlogButton = useRef('')
     const [data, isLoading, error] = useBlogs()
 
@@ -21,7 +21,7 @@ const BlogList = ({ userId }) => {
             </Togglable>
             <ul>
                 {blogs.map((blog) => (
-                <Blog key={blog.id} blog={blog} userId={userId} />
+                <BlogLink key={blog.id} blog={blog} />
                 ))}
             </ul>
         </>
