@@ -1,22 +1,26 @@
 import { useQueryClient, useMutation } from '@tanstack/react-query'
-import blogService from '../services/blogs'
 import { handleNotification } from '../reducers/notificationReducer'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
+import { blogService } from '../services/axios'
 
 const useBlogMutation = () => {
   const client = useQueryClient()
   const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const config = {
+    headers: { Authorization: `Bearer ${user.token}` },
+  }
 
   const create = useMutation({
-    mutationFn: (data) => blogService.create(data, user.token),
+    mutationFn: (data) => blogService.post('/',data, config),
     onSuccess: (response) => {
-      client.setQueryData(['blogs'], (old) => old.concat(response))
+      const data = response.data
+      client.setQueryData(['blogs'], (old) => old.concat(data))
       dispatch(
         handleNotification(
-          `Succesfully added ${response.title} by ${response.author}`,
+          `Succesfully added ${data.title} by ${data.author}`,
           'info',
         ),
       )
@@ -26,27 +30,27 @@ const useBlogMutation = () => {
   })
 
   const update = useMutation({
-    mutationFn: (data) => blogService.update(data, user.token),
+    mutationFn: (data) => blogService.put(`/${data.id}`, data, config),
     onSuccess: (response) => {
-      client.setQueryData(['blog', response.id], () => response),
+      const data = response.data
+      client.setQueryData(['blog', data.id], () => data),
       dispatch(
         handleNotification(
-          `Succesfully updated ${response.title} by ${response.author}`,
+          `Succesfully updated ${data.title} by ${data.author}`,
           'info',
         ),
       )
     },
     onError: (error) =>
-      dispatch(handleNotification(error.response.data, 'error')),
+      dispatch(handleNotification(error.message, 'error')),
   })
 
   const remove = useMutation({
-    mutationFn: (data) => blogService.remove(data, user.token),
+    mutationFn: (data) => blogService.delete(`/${data.id}`, config),
     onMutate: (data) => {
       data
     },
     onSuccess: (response, context) => {
-      client.removeQueries(['blog', context.id])
       dispatch(
         handleNotification(
           `Succesfully deleted ${context.title} by ${context.author}`,
@@ -54,6 +58,22 @@ const useBlogMutation = () => {
         ),
       )
       navigate('/')
+    },
+    onError: (error) => {
+      dispatch(handleNotification(error.message, 'error'))},
+  })
+
+  const comment = useMutation({
+    mutationFn: (data) => blogService.post(`/${data.id}/comments`, data, config),
+    onSuccess: (response) => {
+      const data = response.data
+      client.setQueryData(['blog', data.id], () => data),
+      dispatch(
+        handleNotification(
+          `Succesfully added a comment to ${data.title}`,
+          'info',
+        ),
+      )
     },
     onError: (error) =>
       dispatch(handleNotification(error.response.data, 'error')),
@@ -63,6 +83,7 @@ const useBlogMutation = () => {
     create,
     update,
     remove,
+    comment
   }
 
   return service

@@ -1,8 +1,8 @@
 import { useSelector, useDispatch } from 'react-redux'
-import { set, clear } from '../reducers/userReducer'
+import { setUser, clearUser } from '../reducers/userReducer'
 import { handleNotification } from '../reducers/notificationReducer'
 import { useEffect } from 'react'
-import loginService from '../services/login'
+import { loginService } from '../services/axios'
 
 const useAuth = () => {
   const dispatch = useDispatch()
@@ -11,22 +11,21 @@ const useAuth = () => {
   useEffect(() => {
     const session = localStorage.getItem('currentUser')
     if (session) {
-      dispatch(set(JSON.parse(session)))
+      dispatch(setUser(JSON.parse(session)))
     }
   }, [dispatch])
 
-  const login = async (credentials) => {
-    const response = await loginService.login(credentials)
-    if (response.status === 200) {
-      dispatch(set(response.data))
-      localStorage.setItem('currentUser', JSON.stringify(response.data))
-      dispatch(handleNotification('Succesfully logged in', 'info'))
-    } else {
-      dispatch(handleNotification(response.response.data, 'error'))
-    }
+  const login = (credentials) => {
+    loginService.post('/', credentials)
+      .then(response => {
+        dispatch(setUser(response.data))
+        localStorage.setItem('currentUser', JSON.stringify(response.data))
+        dispatch(handleNotification('Succesfully logged in', 'info'))
+      })
+      .catch(response => dispatch(handleNotification(response.response.data, 'error')))
   }
   const logout = () => {
-    dispatch(clear())
+    dispatch(clearUser())
     localStorage.removeItem('currentUser')
     dispatch(handleNotification('Succesfully logged out', 'info'))
   }

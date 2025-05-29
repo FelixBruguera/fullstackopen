@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
-import blogService from '../services/blogs'
+import { blogService } from '../services/axios'
 
 const useBlogs = () => {
-  console.log('Ran blog hook')
-
   const { data, error, isLoading } = useQuery({
     queryKey: ['blogs'],
-    queryFn: blogService.getAll,
+    queryFn: async () => {
+      const response = await blogService.get('/')
+      return response.data
+    },
     refetchOnWindowFocus: false,
   })
 

@@ -1,6 +1,7 @@
+import { memo } from 'react'
 import { NavLink } from 'react-router'
 
-const Nav = ({ user, userService }) => {
+const Nav = memo(function Nav({ user, userService }) {
     return (
         <nav style={{ 'display': 'flex', alignItems: 'center', justifyContent: 'space-evenly' }}>
             <NavLink to={'/'}>Blogs</NavLink>
@@ -13,6 +14,6 @@ const Nav = ({ user, userService }) => {
             </div>
         </nav>
     )
-}
+})
 
 export default Nav

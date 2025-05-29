@@ -1,5 +1,5 @@
 import useUser from '../hooks/useUser'
-import { useParams } from 'react-router'
+import { Link, useParams } from 'react-router'
 
 const User = () => {
     const params = useParams()
@@ -7,7 +7,10 @@ const User = () => {
     if (isLoading) {
         return <p>Loading...</p>
     }
-    console.log(data.blogs)
+    if (error) {
+        return <p>Something went wrong</p>
+    }
+    console.log([data, isLoading, error])
     return (
         <>
         <h1>{data.name}</h1>
@@ -15,7 +18,9 @@ const User = () => {
         <ul>
             {data.blogs.map(blog => {
                 return (
-                    <li key={blog.id}>{blog.title}</li>
+                    <li key={blog.id}>
+                        <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                    </li>
                 )
             })}
         </ul>

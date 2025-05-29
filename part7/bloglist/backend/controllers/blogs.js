@@ -1,15 +1,16 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const Comment = require('../models/comment')
 const middleware = require('../utils/middleware')
 
 blogsRouter.get('/', async (request, response) => {
-  const data = await Blog.find({}).populate('user', { name: 1, id: 1 })
+  const data = await Blog.find({})
   response.json(data)
 })
 
 blogsRouter.get('/:id', async (request, response) => {
   const id = request.params.id
-  const data = await Blog.findById(id).populate('user', { name: 1, id: 1 })
+  const data = await Blog.findById(id).populate('user', { name: 1, id: 1 }).populate('comments')
   response.json(data)
 })
 
@@ -23,8 +24,20 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
     likes: contents.likes || 0,
     user: user.id })
   const blog = await newBlog.save()
-  user.blogs = user.blogs.concat(blog._id)
-  await user.save()
+  const blogForResponse = blog.toJSON()
+  blogForResponse.user = { name: user.name, id: user.id }
+  response.status(201).json(blogForResponse)
+})
+
+blogsRouter.post('/:id/comments', middleware.userExtractor, async (request, response) => {
+  const user = request.user
+  const contents = request.body
+  const blogId = request.params.id
+  const newComment = new Comment({
+    content: contents.comment,
+    blog: blogId })
+  await newComment.save()
+  const blog = await Blog.findById(blogId).populate('comments')
   const blogForResponse = blog.toJSON()
   blogForResponse.user = { name: user.name, id: user.id }
   response.status(201).json(blogForResponse)
@@ -33,10 +46,10 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
 blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) => {
   const user = request.user
   const id = request.params.id
-  if (user.blogs.includes(id)) {
+  const blog = await Blog.findById(id)
+  if (blog.user.equals(user.id)) {
     await Blog.findByIdAndDelete(id)
-    user.blogs = user.blogs.filter(blogId => blogId.toString() !== id)
-    await user.save()
+    await Comment.deleteMany({ 'blog': id })
     response.status(204).send()
   }
   else {
@@ -53,6 +66,7 @@ blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
   const blog = await Blog.findByIdAndUpdate(id, updatedBlog, { new: true })
   const blogForResponse = blog.toJSON()
   blogForResponse.user = { name: user.name, id: user.id }
+  blogForResponse.comments = updatedBlog.comments
   response.json(blogForResponse)
 })
 

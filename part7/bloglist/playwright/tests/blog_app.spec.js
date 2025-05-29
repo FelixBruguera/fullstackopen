@@ -37,7 +37,7 @@ describe('Blog app', async () => {
     describe('with invalid credentials', () => {
         test('the correct error message is rendered', async ({ page }) => {
             await loginWith(page, 'root', 'wrong')
-            await expect(page.locator('.error')).toContainText('Invalid username or password')
+            await expect(page.getByText('Invalid username or password')).toBeVisible()
             await expect(page.getByText('Dev logged in')).not.toBeVisible()
         })
     })
@@ -81,6 +81,12 @@ describe('Blog app', async () => {
                 await page.getByRole('link', {name: 'Test Blog'}).click()
                 await expect(page.getByText('Likes', {exact: false})).toHaveText('Likes: 0')
             })
+            test('comments are added', async ({ page }) => {
+                page.getByRole('link', {name: 'Second Blog'}).click()
+                await page.getByRole('textbox').fill('good blog')
+                await page.getByRole('button', {name: 'Send'}).click()
+                await expect(page.getByRole('listitem','good blog', {exact: true})).toBeVisible()
+            })
         })
     })
     describe('when loged in as a different user', () => {
@@ -99,6 +105,7 @@ describe('Blog app', async () => {
         })
         test('the delete button is not rendered', async ({ page }) => {
             await page.getByRole('link', {name: 'Test Blog'}).click()
+            await expect(page.getByRole('heading', {name: 'Test Blog'})).toBeVisible()
             await expect(page.getByRole('button', { name: 'Delete' })).not.toBeVisible()
         })
     })

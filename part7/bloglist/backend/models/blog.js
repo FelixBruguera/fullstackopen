@@ -12,10 +12,17 @@ const blogSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
-  },
+  }
+})
+blogSchema.virtual('comments', {
+  ref: 'Comment',
+  localField: '_id',
+  foreignField: 'blog',
+  justOne: false
 })
 
 blogSchema.set('toJSON', {
+  virtuals: true,
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
