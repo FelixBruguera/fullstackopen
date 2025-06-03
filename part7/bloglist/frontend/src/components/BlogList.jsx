@@ -1,31 +1,36 @@
 import Togglable from './Togglable'
 import NewBlog from './NewBlog'
-import BlogLink from './BlogLink'
+import CardLink from './CardLink'
+import List from './List'
 import { useRef } from 'react'
 import useBlogs from '../hooks/useBlogs'
 
 const BlogList = () => {
-    const newBlogButton = useRef('')
-    const [data, isLoading, error] = useBlogs()
+  const newBlogButton = useRef('')
+  const [data, isLoading, error] = useBlogs()
 
-    if (isLoading) {
-        return <p>Loading...</p>
-    }
-    const blogs = data.sort((a, b) => b.likes - a.likes)
+  if (isLoading) {
+    return <p>Loading...</p>
+  }
+  const blogs = data.sort((a, b) => b.likes - a.likes)
 
-    return (
-        <>
-            <h2>Create new blog</h2>
-            <Togglable buttonLabel='New Blog' reference={newBlogButton}>
-                <NewBlog togglable={newBlogButton} />
-            </Togglable>
-            <ul>
-                {blogs.map((blog) => (
-                <BlogLink key={blog.id} blog={blog} />
-                ))}
-            </ul>
-        </>
-    )
+  return (
+    <section>
+      <Togglable buttonLabel="New Blog" reference={newBlogButton}>
+        <NewBlog togglable={newBlogButton} />
+      </Togglable>
+      <List label="blogs">
+        {blogs.map((blog) => (
+          <CardLink
+            key={blog.id}
+            path={`blogs/${blog.id}`}
+            mainText={blog.title}
+            secondaryText={blog.author}
+          />
+        ))}
+      </List>
+    </section>
+  )
 }
 
 export default BlogList

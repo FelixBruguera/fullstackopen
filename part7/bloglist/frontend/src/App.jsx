@@ -1,14 +1,11 @@
-import { useRef } from 'react'
 import Blog from './components/Blog'
 import Login from './components/Login'
-import NewBlog from './components/NewBlog'
 import Notification from './components/Notification'
-import Togglable from './components/Togglable'
 import BlogList from './components/BlogList'
 import UserList from './components/UserList'
 import User from './components/User'
 import Nav from './components/Nav'
-import './styles/notification.css'
+import './styles/app.css'
 import useAuth from './hooks/useAuth'
 import { Route, Routes } from 'react-router'
 
@@ -18,7 +15,8 @@ const App = () => {
 
   if (user.id === null) {
     return (
-      <div>
+      <div className="px-10 h-screen">
+        <Nav user={user} userService={userService} />
         <Notification />
         <Login handleLogin={userService.login} />
       </div>
@@ -26,16 +24,15 @@ const App = () => {
   }
 
   return (
-    <div>
-      <Nav user={user} userService={userService}/>
-      <Notification />
-      <h2>Blogs</h2>
+    <div className="px-5 lg:px-10 h-screen flex flex-col items-center">
+      <Nav user={user} userService={userService} />
       <Routes>
-        <Route path='/' element={<BlogList />}/>
-        <Route path='/users' element={<UserList/>}/>
-        <Route path='/users/:id' element={<User />}/>
-        <Route path='/blogs/:id' element={<Blog userId={user.id}/>} />
+        <Route path="/" element={<BlogList />} />
+        <Route path="/users" element={<UserList />} />
+        <Route path="/users/:id" element={<User />} />
+        <Route path="/blogs/:id" element={<Blog userId={user.id} />} />
       </Routes>
+      <Notification />
     </div>
   )
 }

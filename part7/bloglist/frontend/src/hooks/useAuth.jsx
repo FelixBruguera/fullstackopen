@@ -16,13 +16,16 @@ const useAuth = () => {
   }, [dispatch])
 
   const login = (credentials) => {
-    loginService.post('/', credentials)
-      .then(response => {
+    loginService
+      .post('/', credentials)
+      .then((response) => {
         dispatch(setUser(response.data))
         localStorage.setItem('currentUser', JSON.stringify(response.data))
         dispatch(handleNotification('Succesfully logged in', 'info'))
       })
-      .catch(response => dispatch(handleNotification(response.response.data, 'error')))
+      .catch((response) =>
+        dispatch(handleNotification(response.response.data, 'error')),
+      )
   }
   const logout = () => {
     dispatch(clearUser())

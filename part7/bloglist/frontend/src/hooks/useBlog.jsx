@@ -5,8 +5,8 @@ const useBlog = (id) => {
   const { data, error, isLoading } = useQuery({
     queryKey: ['blog', id],
     queryFn: async () => {
-        const response = await blogService.get(`/${id}`)
-        return response.data
+      const response = await blogService.get(`/${id}`)
+      return response.data
     },
     refetchOnWindowFocus: false,
   })

@@ -1,5 +1,6 @@
 import { useState, useRef, useImperativeHandle } from 'react'
 import PropTypes from 'prop-types'
+import Button from './Button'
 
 const Togglable = (props) => {
   const [isVisible, setIsVisible] = useState(false)
@@ -10,24 +11,20 @@ const Togglable = (props) => {
     return { toggleVisibility }
   })
 
-  if (isVisible) {
-    return (
-      <div>
-        {props.children}
-        <button type="button" onClick={() => toggleVisibility()}>
-          Close
-        </button>
-      </div>
-    )
-  } else {
-    return (
-      <>
-        <button type="button" onClick={() => toggleVisibility()}>
-          {props.buttonLabel}
-        </button>
-      </>
-    )
-  }
+  return (
+    <div className="flex flex-col lg:flex-row lg:h-15 justify-between items-center w-full lg:w-9/10">
+      <Button
+        type="button"
+        style="light"
+        width="min"
+        margin="none"
+        onClick={() => toggleVisibility()}
+      >
+        {isVisible ? 'Close' : props.buttonLabel}
+      </Button>
+      {isVisible ? props.children : <span className="w-3/4"></span>}
+    </div>
+  )
 }
 
 Togglable.propTypes = {

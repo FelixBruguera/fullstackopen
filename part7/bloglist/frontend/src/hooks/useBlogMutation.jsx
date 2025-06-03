@@ -14,7 +14,7 @@ const useBlogMutation = () => {
   }
 
   const create = useMutation({
-    mutationFn: (data) => blogService.post('/',data, config),
+    mutationFn: (data) => blogService.post('/', data, config),
     onSuccess: (response) => {
       const data = response.data
       client.setQueryData(['blogs'], (old) => old.concat(data))
@@ -34,15 +34,14 @@ const useBlogMutation = () => {
     onSuccess: (response) => {
       const data = response.data
       client.setQueryData(['blog', data.id], () => data),
-      dispatch(
-        handleNotification(
-          `Succesfully updated ${data.title} by ${data.author}`,
-          'info',
-        ),
-      )
+        dispatch(
+          handleNotification(
+            `Succesfully updated ${data.title} by ${data.author}`,
+            'info',
+          ),
+        )
     },
-    onError: (error) =>
-      dispatch(handleNotification(error.message, 'error')),
+    onError: (error) => dispatch(handleNotification(error.message, 'error')),
   })
 
   const remove = useMutation({
@@ -60,20 +59,22 @@ const useBlogMutation = () => {
       navigate('/')
     },
     onError: (error) => {
-      dispatch(handleNotification(error.message, 'error'))},
+      dispatch(handleNotification(error.message, 'error'))
+    },
   })
 
   const comment = useMutation({
-    mutationFn: (data) => blogService.post(`/${data.id}/comments`, data, config),
+    mutationFn: (data) =>
+      blogService.post(`/${data.id}/comments`, data, config),
     onSuccess: (response) => {
       const data = response.data
       client.setQueryData(['blog', data.id], () => data),
-      dispatch(
-        handleNotification(
-          `Succesfully added a comment to ${data.title}`,
-          'info',
-        ),
-      )
+        dispatch(
+          handleNotification(
+            `Succesfully added a comment to ${data.title}`,
+            'info',
+          ),
+        )
     },
     onError: (error) =>
       dispatch(handleNotification(error.response.data, 'error')),
@@ -83,7 +84,7 @@ const useBlogMutation = () => {
     create,
     update,
     remove,
-    comment
+    comment,
   }
 
   return service

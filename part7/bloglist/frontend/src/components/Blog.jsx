@@ -2,6 +2,9 @@ import useBlogMutation from '../hooks/useBlogMutation'
 import useBlog from '../hooks/useBlog'
 import { useParams } from 'react-router'
 import { Link } from 'react-router'
+import Button from './Button'
+import Input from './Input'
+import Comments from './Comments'
 
 const Blog = ({ userId }) => {
   const params = useParams()
@@ -26,62 +29,95 @@ const Blog = ({ userId }) => {
     e.target.comment.value = ''
     blogMutation.comment.mutate(comment)
   }
-    if (isLoading) {
-        return <p>Loading...</p>
-    }
+
+  if (isLoading) {
+    return <p>Loading...</p>
+  }
 
   return (
-    <div>
-      <div style={{ display: 'flex' }}>
-        <h1 className="blog-title">{data.title} </h1>
-        <h3 className="blog-author">{data.author}</h3>
-      </div>
+    <div className="py-5 w-full lg:w-1/2 flex flex-col items-start gap-5">
       <div>
+        <h1 className="text-3xl font-bold">{data.title} </h1>
+        <h3 className="text-gray-700">{data.author}</h3>
+      </div>
+      <div className="flex w-full items-center justify-between">
+        <Button width="w-1/4" margin="0">
           <a
-            className="blog-url"
+            className="flex w-full justify-evenly items-center"
             href={data.url}
             rel="noreferrer"
             target="_blank"
           >
-            {data.url}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#CCCCCC"
+            >
+              <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" />
+            </svg>
+            Read
           </a>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <p className="blog-likes">Likes: {data.likes}</p>
-            <button
-              className="blog-like"
-              type="button"
-              onClick={() => handleLike()}
+        </Button>
+        <div className="flex w-3/4 items-center justify-end gap-5">
+          <p className="h-full px-3 py-1 my-auto bg-gray-200 rounded-lg">
+            {data.likes} Likes
+          </p>
+          <span className="flex items-center justify-evenly w-max gap-1 ">
+            <p>Added by </p>
+            <Link
+              to={`/users/${data.userInfo.id}`}
+              className="text-blue-900 font-bold"
             >
-              Like
-            </button>
-          </div>
-          {data.user
-            ?<span>
-                <p>Added by </p> <Link to={`/users/${data.user.id}`}>{data.user.name}</Link>
-              </span>
-            : null}
-          {userId === data.user?.id.toString() ? (
-            <button
-              className="blog-delete"
-              type="button"
-              onClick={() => handleDelete()}
+              {data.userInfo.name}
+            </Link>
+          </span>
+        </div>
+      </div>
+      <div className="flex w-full items-center justify-start gap-10">
+        <Button
+          style="light"
+          type="button"
+          width="w-2/11"
+          margin="0"
+          onClick={() => handleLike()}
+        >
+          <span className="flex items-center justify-evenly fill-gray-400 hover:fill-gray-300">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
             >
+              <path d="M720-120H280v-520l280-280 50 50q7 7 11.5 19t4.5 23v14l-44 174h258q32 0 56 24t24 56v80q0 7-2 15t-4 15L794-168q-9 20-30 34t-44 14Zm-360-80h360l120-280v-80H480l54-220-174 174v406Zm0-406v406-406Zm-80-34v80H160v360h120v80H80v-520h200Z" />
+            </svg>
+            Like
+          </span>
+        </Button>
+        {userId === data.userInfo.id.toString() ? (
+          <Button
+            style="light"
+            type="button"
+            width="w-2/11"
+            margin="0"
+            onClick={() => handleDelete()}
+          >
+            <span className="flex items-center justify-evenly fill-gray-400 hover:fill-gray-300">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 -960 960 960"
+                width="24px"
+              >
+                <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z" />
+              </svg>
               Delete
-            </button>
-          ) : null}
+            </span>
+          </Button>
+        ) : null}
       </div>
-      <div>
-        <h2>Comments</h2>
-        <form onSubmit={(e) => handleComment(e)}>
-          <input type="text" name="comment" placeholder='Add a comment' />
-          <button type="submit">Send</button>
-        </form>
-        <ul>
-          {data.comments.map(comment => {
-            return ( <li key={comment.id}>{comment.content}</li>)
-          })}
-        </ul>
-      </div>
+      <Comments comments={data.comments} onSubmit={handleComment} />
     </div>
   )
 }

@@ -5,9 +5,9 @@ const useUser = (id) => {
   const { data, error, isLoading } = useQuery({
     queryKey: ['user', id],
     queryFn: async () => {
-        const response = await userService.get(`/${id}`)
-        console.log(response)
-        return response.data
+      const response = await userService.get(`/${id}`)
+      console.log(response)
+      return response.data
     },
     refetchOnWindowFocus: false,
   })
