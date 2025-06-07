@@ -11,7 +11,7 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).send(error.message)
   }
   else if (error.name === 'MongoServerError' && error.message.includes('E11000 duplicate key error')) {
-    return response.status(400).json({ error: 'expected `username` to be unique' })
+    return response.status(400).json('expected `username` to be unique')
   }
   else if (error.name === 'JsonWebTokenError') {
     return response.status(401).send(error.message)
@@ -30,15 +30,15 @@ const getToken = (request) => {
 
 const tokenExtractor = async (request, response, next) => {
   const token = getToken(request)
-  if (token) {
-    request.token = token
+  const decodedToken = jwt.verify(token, process.env.SECRET)
+  if (decodedToken) {
+    request.token = decodedToken
   }
   next()
 }
 
 const userExtractor = async (request, response, next) => {
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  request.user = await User.findById(decodedToken.id)
+  request.user = await User.findById(request.token.id)
   next()
 }
 

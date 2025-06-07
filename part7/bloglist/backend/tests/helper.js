@@ -1,5 +1,6 @@
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const Comment = require('../models/comment')
 const initialBlogs = require('./blogList')
 
 const blogsInDb = async () => {
@@ -12,6 +13,10 @@ const usersInDb = async () => {
   return users.map(user => user.toJSON())
 }
 
+const commentsInDb = async () => {
+  return await Comment.find({})
+}
+
 const invalidId = async () => {
   const createdBlog = new Blog({ title: 'Test', url: 'test.com' })
   const response = await createdBlog.save()
@@ -20,4 +25,4 @@ const invalidId = async () => {
   return id
 }
 
-module.exports = { blogsInDb, initialBlogs, invalidId, usersInDb }
+module.exports = { blogsInDb, initialBlogs, invalidId, usersInDb, commentsInDb }

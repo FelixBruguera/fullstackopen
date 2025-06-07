@@ -7,21 +7,25 @@ const app = require('../../app')
 const api = supertest(app)
 const helper = require('../helper')
 const testUsers = require('../testUsers')
+const jwt = require('jsonwebtoken')
 
 beforeEach( async () => {
   await user.deleteMany({})
   for (const testUser of testUsers) {
     await new user(testUser).save()
   }
+  const selectedUser = await user.findOne({ username: 'root' })
+  const userForToken = { username: selectedUser.username, id: selectedUser._id }
+  this.token = jwt.sign(userForToken, process.env.SECRET)
 })
 
 describe('when the request has valid data', () => {
 
   test('it returns all users', async() => {
-    const response = await api.get('/api/users')
+    const response = await api.get('/api/users').set({ Authorization: `Bearer ${this.token}` })
     assert.strictEqual(response.body.length, 3)
-    const usernames = response.body.map(user => user.username)
-    assert(usernames.includes(testUsers[0].username))
+    const names = response.body.map(user => user.name)
+    assert(names.includes(testUsers[0].name))
   })
 
   test('it creates a new user', async () => {
@@ -64,7 +68,7 @@ describe('when the request has invalid data', () => {
     const usersBefore = await helper.usersInDb()
     const response = await api.post('/api/users').send(userData)
     assert.strictEqual(response.statusCode, 400)
-    assert.strictEqual(response.body.error, 'User validation failed: username: Path `password` is required.')
+    assert.strictEqual(response.text, '"User validation failed: username: Path `password` is required."')
     const usersAfter = await helper.usersInDb()
     assert.strictEqual(usersAfter.length, usersBefore.length)
   })
@@ -74,8 +78,8 @@ describe('when the request has invalid data', () => {
     const usersBefore = await helper.usersInDb()
     const response = await api.post('/api/users').send(userData)
     assert.strictEqual(response.statusCode, 400)
-    assert(response.body.error.includes('password'))
-    assert(response.body.error.includes('is shorter than the minimum allowed length (3)'))
+    assert(response.text.includes('password'))
+    assert(response.text.includes('is shorter than the minimum allowed length (3)'))
     const usersAfter = await helper.usersInDb()
     assert.strictEqual(usersAfter.length, usersBefore.length)
   })
@@ -88,7 +92,7 @@ describe('when the request has invalid data', () => {
     const response = await api.post('/api/users').send(userData)
     assert.strictEqual(response.statusCode, 400)
     const usersAfter = await helper.usersInDb()
-    assert(response.body.error.includes('expected `username` to be unique'))
+    assert(response.text.includes('expected `username` to be unique'))
     assert.strictEqual(usersAfter.length, usersBefore.length)
   })
 })

@@ -4,7 +4,6 @@ const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
-    unique: true,
     minLength: 3 },
   name: {
     type: String,
@@ -12,13 +11,6 @@ const userSchema = new mongoose.Schema({
   passwordHash: {
     type: String,
     required: true },
-})
-
-userSchema.virtual('blogs', {
-  ref: 'Blog',
-  localField: '_id',
-  foreignField: 'user',
-  justOne: false
 })
 
 userSchema.set('toJSON', {

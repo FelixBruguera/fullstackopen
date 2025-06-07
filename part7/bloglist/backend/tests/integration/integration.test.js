@@ -43,11 +43,9 @@ describe('Blog workflow', () => {
     const newBlog = { title: 'test blog', url: 'testblog.com', author: 'test', likes: 1 }
     const createdBlog = await api.post('/api/blogs').set({ Authorization: `Bearer ${token}` }).send(newBlog)
       .expect(201)
-    const { id, user: blogUser, ...blogWithoutId } = createdBlog.body
+    const { id, userInfo, ...blogWithoutId } = createdBlog.body
     assert.deepStrictEqual(blogWithoutId, newBlog, 'the saved blog should have the correct data')
-    assert.strictEqual(blogUser.toString(), userId, 'the blog should link to the right user id')
-    const userAfterBlogCreation = await user.findOne({ username: testUser.username })
-    assert(userAfterBlogCreation.blogs.includes(id), 'the user should link to the created blog')
+    assert.strictEqual(userInfo.id.toString(), userId, 'the blog should link to the right user id')
     blogId = id
   })
 
@@ -56,8 +54,6 @@ describe('Blog workflow', () => {
       .expect(204)
     const blogsAfterDeletetion = await helper.blogsInDb()
     assert(blogsAfterDeletetion.length === 0, 'the blog should be deleted')
-    const userAfterBlogDeletion = await user.findOne({ username: testUser.username })
-    assert(!userAfterBlogDeletion.blogs.includes(blogId), 'the user should not link to the deleted blog')
   })
 })
 
