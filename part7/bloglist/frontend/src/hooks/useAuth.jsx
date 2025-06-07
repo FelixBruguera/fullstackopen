@@ -3,6 +3,7 @@ import { setUser, clearUser } from '../reducers/userReducer'
 import { handleNotification } from '../reducers/notificationReducer'
 import { useEffect } from 'react'
 import { loginService } from '../services/axios'
+import { redirect } from 'react-router'
 
 const useAuth = () => {
   const dispatch = useDispatch()
@@ -10,10 +11,10 @@ const useAuth = () => {
 
   useEffect(() => {
     const session = localStorage.getItem('currentUser')
-    if (session) {
+    if (user.token === null && session) {
       dispatch(setUser(JSON.parse(session)))
     }
-  }, [dispatch])
+  }, [dispatch, user.token])
 
   const login = (credentials) => {
     loginService
@@ -24,13 +25,19 @@ const useAuth = () => {
         dispatch(handleNotification('Succesfully logged in', 'info'))
       })
       .catch((response) =>
-        dispatch(handleNotification(response.response.data, 'error')),
+        dispatch(
+          handleNotification(
+            response.response.data || 'Something went wrong',
+            'error',
+          ),
+        ),
       )
   }
   const logout = () => {
     dispatch(clearUser())
     localStorage.removeItem('currentUser')
     dispatch(handleNotification('Succesfully logged out', 'info'))
+    return redirect('/')
   }
 
   const service = {

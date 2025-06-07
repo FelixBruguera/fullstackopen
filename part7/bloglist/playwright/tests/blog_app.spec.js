@@ -24,21 +24,45 @@ describe('Blog app', async () => {
         await expect(form).toBeVisible()
     })
 
+    test('the sign up form creates a user', async ({ page }) => {
+        await page.getByRole('button', {name: 'Sign up'}).click()
+        await page.getByRole('textbox', {name: 'Name', exact: true}).fill('Testing')
+        await page.getByRole('textbox', {name: 'Username'}).fill('testing')
+        await page.getByRole('textbox', {name: 'Password'}).fill('testingpass')
+        await page.getByRole('button', {name: 'Send'}).click()
+        await expect(page.getByText('Succesfully created your account')).toBeVisible()
+    })
+
     describe('with valid credentials', () => {
         test('the user can log in', async ({ page }) => {
             await loginWith(page, 'root', 'securepassword')
             await expect(page.getByText('Succesfully logged in')).toBeVisible()
-            await expect(page.getByRole('heading', {name: 'blogs'})).toBeVisible()
             const locator = await page.getByText('Dev logged in')
             await expect(locator).toBeVisible()
         })
     })
 
     describe('with invalid credentials', () => {
-        test('the correct error message is rendered', async ({ page }) => {
+        test('the login form renders the correct error message', async ({ page }) => {
             await loginWith(page, 'root', 'wrong')
             await expect(page.getByText('Invalid username or password')).toBeVisible()
             await expect(page.getByText('Dev logged in')).not.toBeVisible()
+        })
+        test('when the username is not unique, the sign up form returns the correct messsage', async ({ page }) => {
+            await page.getByRole('button', {name: 'Sign up'}).click()
+            await page.getByRole('textbox', {name: 'Name', exact: true}).fill('Testing')
+            await page.getByRole('textbox', {name: 'Username'}).fill('root')
+            await page.getByRole('textbox', {name: 'Password'}).fill('testingpass')
+            await page.getByRole('button', {name: 'Send'}).click()
+            await expect(page.getByText('expected `username` to be unique')).toBeVisible()
+        })
+        test('when the password is too short, the sign up form returns the correct messsage', async ({ page }) => {
+            await page.getByRole('button', {name: 'Sign up'}).click()
+            await page.getByRole('textbox', {name: 'Name', exact: true}).fill('Testing')
+            await page.getByRole('textbox', {name: 'Username'}).fill('testing')
+            await page.getByRole('textbox', {name: 'Password'}).fill('te')
+            await page.getByRole('button', {name: 'Send'}).click()
+            await expect(page.getByText('Path `password` is shorter than the minimum allowed length (3)')).toBeVisible()
         })
     })
 
@@ -60,7 +84,7 @@ describe('Blog app', async () => {
             test('a blog can be liked', async ({ page }) => {
                 page.getByRole('link', {name: 'Second Blog'}).click()
                 await page.getByRole('button', { name: 'Like' }).click()
-                await expect(page.getByText('Likes', {exact: false})).toContainText('Likes: 1')
+                await expect(page.getByText('Likes', {exact: false})).toContainText('1 Likes')
             })
             test('the user who added a blog can delete it', async ({ page }) => {
                 page.on('dialog', dialog => dialog.accept())
@@ -73,13 +97,13 @@ describe('Blog app', async () => {
             test('the blogs are sorted by likes', async({ page }) => {
                 await likeBlog(page, 'Loren Ipsum', 2)
                 await likeBlog(page, 'Second Blog', 1)
-                await expect(page.locator('.blog').first()).toContainText('Loren Ipsum')
+                await expect(page.getByRole('listitem').first()).toContainText('Loren Ipsum')
                 await page.getByRole('link', {name: 'Loren Ipsum'}).click()
-                await expect(page.getByText('Likes', {exact: false})).toHaveText('Likes: 2')
+                await expect(page.getByText('Likes', {exact: false})).toHaveText('2 Likes')
                 await page.getByRole('link', {name: 'Blogs'}).click()
-                await expect(page.locator('.blog').last()).toContainText('Test Blog')
+                await expect(page.getByRole('listitem').last()).toContainText('Test Blog')
                 await page.getByRole('link', {name: 'Test Blog'}).click()
-                await expect(page.getByText('Likes', {exact: false})).toHaveText('Likes: 0')
+                await expect(page.getByText('Likes', {exact: false})).toHaveText('0 Likes')
             })
             test('comments are added', async ({ page }) => {
                 page.getByRole('link', {name: 'Second Blog'}).click()

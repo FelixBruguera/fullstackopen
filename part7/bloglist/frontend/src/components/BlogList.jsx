@@ -12,6 +12,9 @@ const BlogList = () => {
   if (isLoading) {
     return <p>Loading...</p>
   }
+  if (error) {
+    return <p>Something went wrong</p>
+  }
   const blogs = data.sort((a, b) => b.likes - a.likes)
 
   return (

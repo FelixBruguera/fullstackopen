@@ -3,17 +3,18 @@ import useBlog from '../hooks/useBlog'
 import { useParams } from 'react-router'
 import { Link } from 'react-router'
 import Button from './Button'
-import Input from './Input'
 import Comments from './Comments'
+import BlogButton from './BlogButton'
+import { useNavigate } from 'react-router'
 
 const Blog = ({ userId }) => {
   const params = useParams()
   const blogMutation = useBlogMutation()
+  const navigate = useNavigate()
   const [data, isLoading, error] = useBlog(params.id)
 
   const handleLike = () => {
-    const updatedBlog = { ...data, likes: data.likes + 1 }
-    blogMutation.update.mutate(updatedBlog)
+    blogMutation.update.mutate(data)
   }
   const handleDelete = () => {
     const confirmation = window.confirm(
@@ -21,17 +22,22 @@ const Blog = ({ userId }) => {
     )
     if (confirmation) {
       blogMutation.remove.mutate(data)
+      return navigate('/')
     }
   }
   const handleComment = (e) => {
     e.preventDefault()
-    const comment = { comment: e.target.comment.value, id: data.id }
+    const requestData = { id: data.id, comment: e.target.comment.value }
     e.target.comment.value = ''
-    blogMutation.comment.mutate(comment)
+    blogMutation.comment.mutate(requestData)
   }
 
   if (isLoading) {
     return <p>Loading...</p>
+  }
+
+  if (error) {
+    return <p>Something went wrong</p>
   }
 
   return (
@@ -76,45 +82,29 @@ const Blog = ({ userId }) => {
         </div>
       </div>
       <div className="flex w-full items-center justify-start gap-10">
-        <Button
-          style="light"
-          type="button"
-          width="w-2/11"
-          margin="0"
-          onClick={() => handleLike()}
-        >
-          <span className="flex items-center justify-evenly fill-gray-400 hover:fill-gray-300">
+        <BlogButton onClick={handleLike}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24px"
+            viewBox="0 -960 960 960"
+            width="24px"
+          >
+            <path d="M720-120H280v-520l280-280 50 50q7 7 11.5 19t4.5 23v14l-44 174h258q32 0 56 24t24 56v80q0 7-2 15t-4 15L794-168q-9 20-30 34t-44 14Zm-360-80h360l120-280v-80H480l54-220-174 174v406Zm0-406v406-406Zm-80-34v80H160v360h120v80H80v-520h200Z" />
+          </svg>
+          Like
+        </BlogButton>
+        {userId === data.userInfo.id.toString() ? (
+          <BlogButton onClick={handleDelete}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="24px"
               viewBox="0 -960 960 960"
               width="24px"
             >
-              <path d="M720-120H280v-520l280-280 50 50q7 7 11.5 19t4.5 23v14l-44 174h258q32 0 56 24t24 56v80q0 7-2 15t-4 15L794-168q-9 20-30 34t-44 14Zm-360-80h360l120-280v-80H480l54-220-174 174v406Zm0-406v406-406Zm-80-34v80H160v360h120v80H80v-520h200Z" />
+              <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z" />
             </svg>
-            Like
-          </span>
-        </Button>
-        {userId === data.userInfo.id.toString() ? (
-          <Button
-            style="light"
-            type="button"
-            width="w-2/11"
-            margin="0"
-            onClick={() => handleDelete()}
-          >
-            <span className="flex items-center justify-evenly fill-gray-400 hover:fill-gray-300">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="24px"
-                viewBox="0 -960 960 960"
-                width="24px"
-              >
-                <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z" />
-              </svg>
-              Delete
-            </span>
-          </Button>
+            Delete
+          </BlogButton>
         ) : null}
       </div>
       <Comments comments={data.comments} onSubmit={handleComment} />

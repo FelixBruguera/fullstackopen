@@ -8,6 +8,9 @@ const UserList = () => {
   if (isLoading) {
     return <p>Loading...</p>
   }
+  if (error) {
+    return <p>Something went wrong</p>
+  }
 
   const users = data.sort((a, b) => b.blogs.length - a.blogs.length)
   return (

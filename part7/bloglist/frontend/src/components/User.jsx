@@ -15,7 +15,7 @@ const User = () => {
   return (
     <section>
       <h1 className="font-bold text-3xl text-center">{data.name}</h1>
-      <p className='text-center text-gray-700 text-md'>Added blogs</p>
+      <p className="text-center text-gray-700 text-md">Added blogs</p>
       <List label="added blogs">
         {data.blogs.map((blog) => (
           <CardLink

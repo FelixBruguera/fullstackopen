@@ -23,7 +23,6 @@ const notificationSlice = createSlice({
 export const handleNotification = (message, type) => {
   return async (dispatch) => {
     const timeout = setTimeout(() => dispatch(clear()), 5000)
-    console.log(timeout)
     dispatch(set({ message, type, timeout }))
   }
 }

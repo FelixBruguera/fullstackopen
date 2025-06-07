@@ -1,5 +1,6 @@
 import Blog from './components/Blog'
 import Login from './components/Login'
+import Signup from './components/Signup'
 import Notification from './components/Notification'
 import BlogList from './components/BlogList'
 import UserList from './components/UserList'
@@ -11,21 +12,27 @@ import { Route, Routes } from 'react-router'
 
 const App = () => {
   const [user, userService] = useAuth()
-  console.log('Render app')
 
   if (user.id === null) {
     return (
       <div className="px-10 h-screen">
-        <Nav user={user} userService={userService} />
+        <Nav />
+        <Routes>
+          <Route
+            index
+            path="/"
+            element={<Login handleLogin={userService.login} />}
+          />
+          <Route path="/signup" element={<Signup />} />
+        </Routes>
         <Notification />
-        <Login handleLogin={userService.login} />
       </div>
     )
   }
 
   return (
     <div className="px-5 lg:px-10 h-screen flex flex-col items-center">
-      <Nav user={user} userService={userService} />
+      <Nav />
       <Routes>
         <Route path="/" element={<BlogList />} />
         <Route path="/users" element={<UserList />} />
