@@ -39,6 +39,7 @@ if (process.env.NODE_ENV === 'test') {
 app.get('/api/env', async (request, response) => {
   response.json({ env: process.env.NODE_ENV })
 })
+app.use('*',express.static('dist'))
 app.use(middleware.errorHandler)
 
 module.exports = app
