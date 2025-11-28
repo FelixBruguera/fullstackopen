@@ -1,18 +1,19 @@
 import { memo } from 'react'
 import NavItem from './NavItem'
 import Button from './Button'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import useAuth from '../hooks/useAuth'
 
 const Nav = memo(function Nav() {
   const [user, userService] = useAuth()
+  const navigate = useNavigate()
   return (
-    <nav className="w-full flex items-center justify-between py-5">
+    <nav className="w-full flex items-center justify-between my-5">
       <Link
         to="/"
-        className="font-bold text-lg lg:text-3xl text-blue-900 underline"
+        className="font-bold text-lg lg:text-3xl text-white"
       >
-        Blog list
+        Bloglist
       </Link>
       {user.id ? (
         <>
@@ -21,17 +22,19 @@ const Nav = memo(function Nav() {
             <NavItem url={'/users'} title="Users" />
           </div>
           <div className="w-1/4 flex justify-between items-center">
-            <p className="hidden lg:block">
-              <span className="text-blue-900 font-bold">{user.name}</span>{' '}
+            <p className="hidden lg:block text-text-primary">
+              <span className="text-white font-bold">{user.name}</span>{' '}
               logged in
             </p>
             <Button
               type="button"
               style="light"
-              width="min"
-              onClick={() => userService.logout()}
+              className="!w-fit"
+              onClick={() => {
+                userService.logout()
+                navigate('/')}}
             >
-              <Link to="/">Log out</Link>
+              Log out
             </Button>
           </div>
         </>

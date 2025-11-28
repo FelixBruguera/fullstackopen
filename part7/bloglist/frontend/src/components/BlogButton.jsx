@@ -5,13 +5,10 @@ const BlogButton = (props) => {
     <Button
       style="light"
       type="button"
-      width="w-2/11"
-      margin="0"
+      className="!w-fit !m-0 flex items-center justify-evenly gap-2 fill-text-primary shrink-0"
       onClick={() => props.onClick()}
     >
-      <span className="flex items-center justify-evenly fill-gray-400 hover:fill-gray-300">
         {props.children}
-      </span>
     </Button>
   )
 }

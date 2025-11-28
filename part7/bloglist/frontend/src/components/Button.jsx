@@ -4,15 +4,14 @@ const Button = ({
   onClick,
   label,
   title,
-  width = 'full',
-  margin = 'auto',
+  className,
   children,
 }) => {
   return (
     <button
-      className={`py-2 px-2 lg:px-4 text-sm lg:text-base rounded-2xl shadow-sm ${width} min-w-20 m-${margin}
-                    hover:bg-black hover:text-white hover:cursor-pointer transition-all
-            ${style === 'light' ? 'bg-gray-200' : 'bg-blue-900 text-white'}`}
+      className={`py-2 px-2 lg:px-4 text-sm lg:text-sm w-full min-w-20 m-auto
+                    hover:bg-accent hover:text-white hover:cursor-pointer transition-colors rounded-xl border-1 border-border text-text-primary
+            ${style === 'light' ? 'bg-transparent' : 'bg-accent hover:bg-black!'} ${className}`}
       type={type || 'button'}
       aria-label={label}
       title={title}

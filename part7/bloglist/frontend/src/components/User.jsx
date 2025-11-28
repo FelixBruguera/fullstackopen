@@ -2,20 +2,21 @@ import useUser from '../hooks/useUser'
 import { Link, useParams } from 'react-router'
 import List from './List'
 import CardLink from './CardLink'
+import Loading from './Loading'
 
 const User = () => {
   const params = useParams()
   const [data, isLoading, error] = useUser(params.id)
   if (isLoading) {
-    return <p>Loading...</p>
+   return <Loading />
   }
   if (error) {
     return <p>Something went wrong</p>
   }
   return (
     <section>
-      <h1 className="font-bold text-3xl text-center">{data.name}</h1>
-      <p className="text-center text-gray-700 text-md">Added blogs</p>
+      <h1 className="font-bold text-3xl text-center text-text-primary">{data.name}</h1>
+      {data.blogs && (<p className="text-center text-text-secondary">{data.blogs.length} Added blogs</p>)}
       <List label="added blogs">
         {data.blogs.map((blog) => (
           <CardLink

@@ -15,7 +15,7 @@ const App = () => {
 
   if (user.id === null) {
     return (
-      <div className="px-10 h-screen">
+      <div className="flex flex-col px-10 min-h-dvh bg-slate-900">
         <Nav />
         <Routes>
           <Route
@@ -31,7 +31,7 @@ const App = () => {
   }
 
   return (
-    <div className="px-5 lg:px-10 h-screen flex flex-col items-center">
+    <div className="px-5 lg:px-10 min-h-dvh flex flex-col items-center bg-slate-900">
       <Nav />
       <Routes>
         <Route path="/" element={<BlogList />} />

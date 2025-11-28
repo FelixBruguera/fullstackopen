@@ -90,6 +90,7 @@ describe('Blog app', async () => {
                 page.on('dialog', dialog => dialog.accept())
                 page.getByRole('link', {name: 'Loren Ipsum'}).click()
                 await page.getByRole('button', { name: 'Delete' }).click()
+                await page.getByRole('button', { name: 'Confirm' }).click()
                 await expect(page.getByRole('link', {name: 'Second Blog'})).toBeVisible()
                 await expect(page.getByRole('link', {name: 'Loren Ipsum'})).not.toBeVisible()
                 await expect(page.getByText('Succesfully Deleted', {exact: false})).toBeVisible()
